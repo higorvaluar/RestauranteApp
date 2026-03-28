@@ -10,6 +10,6 @@
         public string Estado { get; set; } = string.Empty;
         public string CEP { get; set; } = string.Empty;
         public int ClienteId { get; set; }
-        public Cliente Cliente { get; set; }
+        public Cliente Cliente { get; set; } = null!;
     }
 }

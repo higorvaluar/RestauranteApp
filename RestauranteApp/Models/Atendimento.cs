@@ -9,5 +9,7 @@
 
         public int PedidoId { get; set; }
         public Pedido Pedido { get; set; } = null!;
+
+        public abstract decimal CalcularTaxa(decimal subtotalItens, PeriodoEnum periodo);
     }
 }
