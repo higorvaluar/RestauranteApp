@@ -1,0 +1,95 @@
+﻿@model RestauranteApp.ViewModels.RelatoriosViewModel
+
+@{
+    ViewData["Title"] = "Relatórios";
+}
+
+<h1>Relatórios</h1>
+
+<form asp-action="Index" method="post" class="mb-4">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <div class="row">
+        <div class="col-md-3 mb-3">
+            <label asp-for="DataInicial" class="form-label"></label>
+            <input asp-for="DataInicial" class="form-control" type="date" />
+            <span asp-validation-for="DataInicial" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <label asp-for="DataFinal" class="form-label"></label>
+            <input asp-for="DataFinal" class="form-control" type="date" />
+            <span asp-validation-for="DataFinal" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-3 mb-3 d-flex align-items-end">
+            <button type="submit" class="btn btn-primary">Gerar Relatórios</button>
+        </div>
+    </div>
+</form>
+
+<hr />
+
+<h3>Faturamento por Tipo de Atendimento</h3>
+
+@if (Model.FaturamentoPorTipo.Any())
+{
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Tipo de Atendimento</th>
+                <th>Total Faturado</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.FaturamentoPorTipo)
+            {
+                <tr>
+                    <td>@item.TipoAtendimento</td>
+                    <td>@item.TotalFaturado.ToString("C")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>Nenhum dado encontrado para o período informado.</p>
+}
+
+<hr />
+
+<h3>Itens Mais Vendidos</h3>
+
+@if (Model.ItensMaisVendidos.Any())
+{
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Produto</th>
+                <th>Quantidade Vendida</th>
+                <th>Sugestão do Chefe</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.ItensMaisVendidos)
+            {
+                <tr>
+                    <td>@item.NomeProduto</td>
+                    <td>@item.QuantidadeVendida</td>
+                    <td>@(item.ComSugestaoChefe ? "Com Sugestão" : "Sem Sugestão")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>Nenhum dado encontrado para o período informado.</p>
+}
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
