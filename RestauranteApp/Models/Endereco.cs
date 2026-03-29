@@ -1,4 +1,6 @@
-﻿namespace RestauranteApp.Models
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+
+namespace RestauranteApp.Models
 {
     public class Endereco
     {
@@ -9,7 +11,10 @@
         public string Cidade { get; set; } = string.Empty;
         public string Estado { get; set; } = string.Empty;
         public string CEP { get; set; } = string.Empty;
+
         public int ClienteId { get; set; }
+
+        [ValidateNever]
         public Cliente Cliente { get; set; } = null!;
     }
 }
