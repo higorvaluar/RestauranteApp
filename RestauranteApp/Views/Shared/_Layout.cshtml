@@ -23,9 +23,25 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
+
+                        @if (Context.Session.GetInt32("ClienteId") == null)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Auth" asp-action="Login">Login</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Auth" asp-action="Register">Cadastro</a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <span class="nav-link text-dark">Olá, @Context.Session.GetString("ClienteNome")</span>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Auth" asp-action="Logout">Sair</a>
+                            </li>
+                        }
                     </ul>
                 </div>
             </div>

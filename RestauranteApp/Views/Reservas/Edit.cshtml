@@ -13,10 +13,19 @@
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
+            <input asp-for="ClienteId" type="hidden" />
+
+            <div class="form-group mb-3">
+                <label class="control-label">Cliente</label>
+                <input class="form-control" value="@ViewBag.ClienteNome" readonly />
+            </div>
 
             <div class="form-group mb-3">
                 <label asp-for="DataReserva" class="control-label"></label>
-                <input asp-for="DataReserva" class="form-control" type="datetime-local" />
+                <input asp-for="DataReserva"
+                       asp-format="{0:yyyy-MM-ddTHH:mm}"
+                       class="form-control"
+                       type="datetime-local" />
                 <span asp-validation-for="DataReserva" class="text-danger"></span>
             </div>
 
@@ -24,12 +33,6 @@
                 <label asp-for="QuantidadePessoas" class="control-label"></label>
                 <input asp-for="QuantidadePessoas" class="form-control" />
                 <span asp-validation-for="QuantidadePessoas" class="text-danger"></span>
-            </div>
-
-            <div class="form-group mb-3">
-                <label asp-for="ClienteId" class="control-label"></label>
-                <select asp-for="ClienteId" class="form-control" asp-items="ViewBag.ClienteId"></select>
-                <span asp-validation-for="ClienteId" class="text-danger"></span>
             </div>
 
             <div class="form-group mb-3">

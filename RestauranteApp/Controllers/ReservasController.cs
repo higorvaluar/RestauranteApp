@@ -30,14 +30,22 @@ namespace RestauranteApp.Controllers
         // GET: Reservas/Create
         public IActionResult Create()
         {
+            var clienteId = HttpContext.Session.GetInt32("ClienteId");
+            if (clienteId == null)
+            {
+                return RedirectToAction("Login", "Auth");
+            }
+
             CarregarCombos();
 
             var reserva = new Reserva
             {
+                ClienteId = clienteId.Value,
                 DataReserva = DateTime.Today.AddDays(1).AddHours(19),
                 QuantidadePessoas = 1
             };
 
+            ViewBag.ClienteNome = HttpContext.Session.GetString("ClienteNome");
             return View(reserva);
         }
 
@@ -46,11 +54,20 @@ namespace RestauranteApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,DataReserva,QuantidadePessoas,ClienteId,MesaId")] Reserva reserva)
         {
+            var clienteId = HttpContext.Session.GetInt32("ClienteId");
+            if (clienteId == null)
+            {
+                return RedirectToAction("Login", "Auth");
+            }
+
+            reserva.ClienteId = clienteId.Value;
+
             await ValidarReservaAsync(reserva);
 
             if (!ModelState.IsValid)
             {
-                CarregarCombos(reserva.ClienteId, reserva.MesaId);
+                CarregarCombos(reserva.MesaId);
+                ViewBag.ClienteNome = HttpContext.Session.GetString("ClienteNome");
                 return View(reserva);
             }
 
@@ -74,7 +91,8 @@ namespace RestauranteApp.Controllers
                 return NotFound();
             }
 
-            CarregarCombos(reserva.ClienteId, reserva.MesaId);
+            CarregarCombos(reserva.MesaId);
+            ViewBag.ClienteNome = reserva.Cliente?.Nome ?? HttpContext.Session.GetString("ClienteNome");
             return View(reserva);
         }
 
@@ -88,11 +106,20 @@ namespace RestauranteApp.Controllers
                 return NotFound();
             }
 
+            var clienteId = HttpContext.Session.GetInt32("ClienteId");
+            if (clienteId == null)
+            {
+                return RedirectToAction("Login", "Auth");
+            }
+
+            reserva.ClienteId = clienteId.Value;
+
             await ValidarReservaAsync(reserva, id);
 
             if (!ModelState.IsValid)
             {
-                CarregarCombos(reserva.ClienteId, reserva.MesaId);
+                CarregarCombos(reserva.MesaId);
+                ViewBag.ClienteNome = HttpContext.Session.GetString("ClienteNome");
                 return View(reserva);
             }
 
@@ -114,14 +141,8 @@ namespace RestauranteApp.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        private void CarregarCombos(int? clienteId = null, int? mesaId = null)
+        private void CarregarCombos(int? mesaId = null)
         {
-            ViewData["ClienteId"] = new SelectList(
-                _context.Clientes.OrderBy(c => c.Nome),
-                "Id",
-                "Nome",
-                clienteId);
-
             ViewData["MesaId"] = new SelectList(
                 _context.Mesas.OrderBy(m => m.Numero),
                 "Id",
@@ -136,13 +157,11 @@ namespace RestauranteApp.Controllers
                 ModelState.AddModelError("QuantidadePessoas", "A quantidade de pessoas deve ser maior que zero.");
             }
 
-            // Antecedência mínima de 1 dia
             if (reserva.DataReserva.Date <= DateTime.Today)
             {
                 ModelState.AddModelError("DataReserva", "A reserva deve ser feita com pelo menos 1 dia de antecedência.");
             }
 
-            // Janela de horário do jantar: 19h às 22h
             var hora = reserva.DataReserva.TimeOfDay;
             var inicio = new TimeSpan(19, 0, 0);
             var fim = new TimeSpan(22, 0, 0);

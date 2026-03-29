@@ -56,15 +56,23 @@ namespace RestauranteApp.Controllers
         // GET: Pedidos/Create
         public IActionResult Create()
         {
+            var clienteId = HttpContext.Session.GetInt32("ClienteId");
+            if (clienteId == null)
+            {
+                return RedirectToAction("Login", "Auth");
+            }
+
             var vm = new PedidoCreateViewModel
             {
                 DataPedido = DateTime.Now,
                 Periodo = PeriodoEnum.Almoco,
+                ClienteId = clienteId.Value,
                 TipoAtendimento = "Presencial",
                 Itens = CriarItensVazios(3)
             };
 
             CarregarCombos();
+            ViewBag.ClienteNome = HttpContext.Session.GetString("ClienteNome");
             return View(vm);
         }
 
@@ -73,8 +81,17 @@ namespace RestauranteApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(PedidoCreateViewModel vm)
         {
+            var clienteId = HttpContext.Session.GetInt32("ClienteId");
+            if (clienteId == null)
+            {
+                return RedirectToAction("Login", "Auth");
+            }
+
+            vm.ClienteId = clienteId.Value;
+
             GarantirItens(vm, 3);
             CarregarCombos();
+            ViewBag.ClienteNome = HttpContext.Session.GetString("ClienteNome");
 
             var itensValidos = vm.Itens
                 .Where(i => i.ProdutoId.HasValue && i.ProdutoId.Value > 0 && i.Quantidade > 0)
@@ -231,14 +248,8 @@ namespace RestauranteApp.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        private bool PedidoExists(int id)
-        {
-            return _context.Pedidos.Any(e => e.Id == id);
-        }
-
         private void CarregarCombos()
         {
-            ViewData["ClienteId"] = new SelectList(_context.Clientes.OrderBy(c => c.Nome), "Id", "Nome");
             ViewBag.Produtos = new SelectList(_context.Produtos.OrderBy(p => p.Nome), "Id", "Nome");
         }
 
