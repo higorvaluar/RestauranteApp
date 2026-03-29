@@ -1,0 +1,37 @@
+﻿@model IEnumerable<RestauranteApp.Models.Reserva>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Reservas</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Data da Reserva</th>
+            <th>Quantidade de Pessoas</th>
+            <th>Cliente</th>
+            <th>Mesa</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.DataReserva</td>
+                <td>@item.QuantidadePessoas</td>
+                <td>@item.Cliente.Nome</td>
+                <td>@item.Mesa.Numero</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
