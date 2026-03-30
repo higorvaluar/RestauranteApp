@@ -18,9 +18,16 @@ namespace RestauranteApp.Controllers
         // GET: Reservas
         public async Task<IActionResult> Index()
         {
+            var clienteId = HttpContext.Session.GetInt32("ClienteId");
+            if (clienteId == null)
+            {
+                return RedirectToAction("Login", "Auth");
+            }
+
             var reservas = await _context.Reservas
                 .Include(r => r.Cliente)
                 .Include(r => r.Mesa)
+                .Where(r => r.ClienteId == clienteId.Value)
                 .OrderBy(r => r.DataReserva)
                 .ToListAsync();
 
@@ -85,14 +92,22 @@ namespace RestauranteApp.Controllers
                 return NotFound();
             }
 
-            var reserva = await _context.Reservas.FindAsync(id);
+            var clienteId = HttpContext.Session.GetInt32("ClienteId");
+            if (clienteId == null)
+            {
+                return RedirectToAction("Login", "Auth");
+            }
+
+            var reserva = await _context.Reservas
+                .FirstOrDefaultAsync(r => r.Id == id && r.ClienteId == clienteId.Value);
+
             if (reserva == null)
             {
                 return NotFound();
             }
 
             CarregarCombos(reserva.MesaId);
-            ViewBag.ClienteNome = reserva.Cliente?.Nome ?? HttpContext.Session.GetString("ClienteNome");
+            ViewBag.ClienteNome = HttpContext.Session.GetString("ClienteNome");
             return View(reserva);
         }
 
@@ -130,7 +145,7 @@ namespace RestauranteApp.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!ReservaExists(reserva.Id))
+                if (!ReservaExists(reserva.Id, clienteId.Value))
                 {
                     return NotFound();
                 }
@@ -201,9 +216,9 @@ namespace RestauranteApp.Controllers
             }
         }
 
-        private bool ReservaExists(int id)
+        private bool ReservaExists(int id, int clienteId)
         {
-            return _context.Reservas.Any(e => e.Id == id);
+            return _context.Reservas.Any(e => e.Id == id && e.ClienteId == clienteId);
         }
     }
 }

@@ -23,9 +23,17 @@ namespace RestauranteApp.Controllers
         // GET: Pedidos
         public async Task<IActionResult> Index()
         {
+            var clienteId = HttpContext.Session.GetInt32("ClienteId");
+            if (clienteId == null)
+            {
+                return RedirectToAction("Login", "Auth");
+            }
+
             var pedidos = await _context.Pedidos
                 .Include(p => p.Cliente)
                 .Include(p => p.Atendimento)
+                .Where(p => p.ClienteId == clienteId.Value)
+                .OrderByDescending(p => p.DataPedido)
                 .ToListAsync();
 
             return View(pedidos);
@@ -39,12 +47,18 @@ namespace RestauranteApp.Controllers
                 return NotFound();
             }
 
+            var clienteId = HttpContext.Session.GetInt32("ClienteId");
+            if (clienteId == null)
+            {
+                return RedirectToAction("Login", "Auth");
+            }
+
             var pedido = await _context.Pedidos
                 .Include(p => p.Cliente)
                 .Include(p => p.Atendimento)
                 .Include(p => p.PedidoItens)
                     .ThenInclude(pi => pi.Produto)
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .FirstOrDefaultAsync(m => m.Id == id && m.ClienteId == clienteId.Value);
 
             if (pedido == null)
             {
@@ -201,11 +215,17 @@ namespace RestauranteApp.Controllers
                 return NotFound();
             }
 
+            var clienteId = HttpContext.Session.GetInt32("ClienteId");
+            if (clienteId == null)
+            {
+                return RedirectToAction("Login", "Auth");
+            }
+
             var pedido = await _context.Pedidos
                 .Include(p => p.Cliente)
                 .Include(p => p.Atendimento)
                 .Include(p => p.PedidoItens)
-                .FirstOrDefaultAsync(p => p.Id == id);
+                .FirstOrDefaultAsync(p => p.Id == id && p.ClienteId == clienteId.Value);
 
             if (pedido == null)
             {
@@ -231,9 +251,15 @@ namespace RestauranteApp.Controllers
                 return NotFound();
             }
 
+            var clienteId = HttpContext.Session.GetInt32("ClienteId");
+            if (clienteId == null)
+            {
+                return RedirectToAction("Login", "Auth");
+            }
+
             var pedido = await _context.Pedidos
                 .Include(p => p.Cliente)
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .FirstOrDefaultAsync(m => m.Id == id && m.ClienteId == clienteId.Value);
 
             if (pedido == null)
             {
@@ -248,13 +274,21 @@ namespace RestauranteApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var pedido = await _context.Pedidos.FindAsync(id);
+            var clienteId = HttpContext.Session.GetInt32("ClienteId");
+            if (clienteId == null)
+            {
+                return RedirectToAction("Login", "Auth");
+            }
+
+            var pedido = await _context.Pedidos
+                .FirstOrDefaultAsync(p => p.Id == id && p.ClienteId == clienteId.Value);
+
             if (pedido != null)
             {
                 _context.Pedidos.Remove(pedido);
+                await _context.SaveChangesAsync();
             }
 
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
