@@ -1,14 +1,55 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using RestauranteApp.Data;
 using RestauranteApp.Models;
+using RestauranteApp.ViewModels;
 using System.Diagnostics;
 
 namespace RestauranteApp.Controllers
 {
     public class HomeController : Controller
     {
-        public IActionResult Index()
+        private readonly AppDbContext _context;
+
+        public HomeController(AppDbContext context)
         {
-            return View();
+            _context = context;
+        }
+
+        public async Task<IActionResult> Index()
+        {
+            var hoje = DateTime.Today;
+
+            var vm = new HomeIndexViewModel
+            {
+                ProdutosAlmoco = await _context.Produtos
+                    .AsNoTracking()
+                    .Where(p => p.Periodo == PeriodoEnum.Almoco)
+                    .OrderBy(p => p.Nome)
+                    .ToListAsync(),
+
+                ProdutosJantar = await _context.Produtos
+                    .AsNoTracking()
+                    .Where(p => p.Periodo == PeriodoEnum.Jantar)
+                    .OrderBy(p => p.Nome)
+                    .ToListAsync(),
+
+                SugestaoAlmoco = await _context.SugestoesChefe
+                    .AsNoTracking()
+                    .Include(s => s.Produto)
+                    .FirstOrDefaultAsync(s =>
+                        s.Data.Date == hoje &&
+                        s.Periodo == PeriodoEnum.Almoco),
+
+                SugestaoJantar = await _context.SugestoesChefe
+                    .AsNoTracking()
+                    .Include(s => s.Produto)
+                    .FirstOrDefaultAsync(s =>
+                        s.Data.Date == hoje &&
+                        s.Periodo == PeriodoEnum.Jantar)
+            };
+
+            return View(vm);
         }
 
         public IActionResult Privacy()

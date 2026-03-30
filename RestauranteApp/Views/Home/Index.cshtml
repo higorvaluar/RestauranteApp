@@ -1,8 +1,135 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model RestauranteApp.ViewModels.HomeIndexViewModel
+
+@{
+    ViewData["Title"] = "Home";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="text-center mb-4">
+    <h1 class="display-5">RestauranteApp</h1>
+    <p>Cardápio e Sugestão do Chefe do dia</p>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="border rounded p-3 h-100">
+            <h3>Sugestão do Chefe - Almoço</h3>
+
+            @if (Model.SugestaoAlmoco != null)
+            {
+                <p><strong>Prato:</strong> @Model.SugestaoAlmoco.Produto.Nome</p>
+                <p><strong>Descrição:</strong> @Model.SugestaoAlmoco.Produto.Descricao</p>
+                <p><strong>Preço base:</strong> R$ @Model.SugestaoAlmoco.Produto.Preco.ToString("F2")</p>
+                <p><strong>Desconto:</strong> @Model.SugestaoAlmoco.PercentualDesconto.ToString("F0")%</p>
+
+                var precoFinalAlmoco = Model.SugestaoAlmoco.Produto.Preco * (1 - (Model.SugestaoAlmoco.PercentualDesconto / 100));
+
+                <p><strong>Preço com desconto:</strong> R$ @precoFinalAlmoco.ToString("F2")</p>
+            }
+            else
+            {
+                <p>Nenhuma sugestão cadastrada para o almoço hoje.</p>
+            }
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="border rounded p-3 h-100">
+            <h3>Sugestão do Chefe - Jantar</h3>
+
+            @if (Model.SugestaoJantar != null)
+            {
+                <p><strong>Prato:</strong> @Model.SugestaoJantar.Produto.Nome</p>
+                <p><strong>Descrição:</strong> @Model.SugestaoJantar.Produto.Descricao</p>
+                <p><strong>Preço base:</strong> R$ @Model.SugestaoJantar.Produto.Preco.ToString("F2")</p>
+                <p><strong>Desconto:</strong> @Model.SugestaoJantar.PercentualDesconto.ToString("F0")%</p>
+
+                var precoFinalJantar = Model.SugestaoJantar.Produto.Preco * (1 - (Model.SugestaoJantar.PercentualDesconto / 100));
+
+                <p><strong>Preço com desconto:</strong> R$ @precoFinalJantar.ToString("F2")</p>
+            }
+            else
+            {
+                <p>Nenhuma sugestão cadastrada para o jantar hoje.</p>
+            }
+        </div>
+    </div>
+</div>
+
+<hr />
+
+<div class="row">
+    <div class="col-md-6">
+        <h3>Cardápio de Almoço</h3>
+
+        @if (Model.ProdutosAlmoco.Any())
+        {
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Prato</th>
+                        <th>Descrição</th>
+                        <th>Preço</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var produto in Model.ProdutosAlmoco)
+                    {
+                        <tr>
+                            <td>@produto.Nome</td>
+                            <td>@produto.Descricao</td>
+                            <td>R$ @produto.Preco.ToString("F2")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <p>Nenhum item cadastrado para o almoço.</p>
+        }
+    </div>
+
+    <div class="col-md-6">
+        <h3>Cardápio de Jantar</h3>
+
+        @if (Model.ProdutosJantar.Any())
+        {
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Prato</th>
+                        <th>Descrição</th>
+                        <th>Preço</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var produto in Model.ProdutosJantar)
+                    {
+                        <tr>
+                            <td>@produto.Nome</td>
+                            <td>@produto.Descricao</td>
+                            <td>R$ @produto.Preco.ToString("F2")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <p>Nenhum item cadastrado para o jantar.</p>
+        }
+    </div>
+</div>
+
+<hr />
+
+<div class="mt-4">
+    <a class="btn btn-primary me-2" asp-controller="Pedidos" asp-action="Create">Fazer Pedido</a>
+    <a class="btn btn-secondary me-2" asp-controller="Reservas" asp-action="Create">Reservar Mesa</a>
+
+    @if (Context.Session.GetInt32("ClienteId") == null)
+    {
+        <a class="btn btn-outline-primary me-2" asp-controller="Auth" asp-action="Login">Login</a>
+        <a class="btn btn-outline-secondary" asp-controller="Auth" asp-action="Register">Cadastro</a>
+    }
 </div>
