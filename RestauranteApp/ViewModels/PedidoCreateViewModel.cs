@@ -29,11 +29,8 @@ namespace RestauranteApp.ViewModels
         [Required]
         public string TipoAtendimento { get; set; } = "Presencial";
 
-        [Display(Name = "Taxa de Entrega")]
-        public decimal TaxaEntrega { get; set; }
-
         [Display(Name = "Endereço de Entrega")]
-        public string EnderecoEntrega { get; set; } = string.Empty;
+        public int? EnderecoId { get; set; }
 
         [Display(Name = "Aplicativo")]
         public string NomeAplicativo { get; set; } = string.Empty;

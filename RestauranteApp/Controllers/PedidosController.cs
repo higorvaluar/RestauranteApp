@@ -12,6 +12,7 @@ namespace RestauranteApp.Controllers
     {
         private readonly AppDbContext _context;
         private readonly PedidoService _pedidoService;
+        private const decimal TAXA_FIXA_DELIVERY_PROPRIO = 8.00m;
 
         public PedidosController(AppDbContext context, PedidoService pedidoService)
         {
@@ -71,8 +72,9 @@ namespace RestauranteApp.Controllers
                 Itens = CriarItensVazios(3)
             };
 
-            CarregarCombos();
+            CarregarCombos(clienteId.Value);
             ViewBag.ClienteNome = HttpContext.Session.GetString("ClienteNome");
+            ViewBag.TaxaFixaDeliveryProprio = TAXA_FIXA_DELIVERY_PROPRIO.ToString("F2");
             return View(vm);
         }
 
@@ -90,8 +92,9 @@ namespace RestauranteApp.Controllers
             vm.ClienteId = clienteId.Value;
 
             GarantirItens(vm, 3);
-            CarregarCombos();
+            CarregarCombos(clienteId.Value);
             ViewBag.ClienteNome = HttpContext.Session.GetString("ClienteNome");
+            ViewBag.TaxaFixaDeliveryProprio = TAXA_FIXA_DELIVERY_PROPRIO.ToString("F2");
 
             var itensValidos = vm.Itens
                 .Where(i => i.ProdutoId.HasValue && i.ProdutoId.Value > 0 && i.Quantidade > 0)
@@ -102,16 +105,23 @@ namespace RestauranteApp.Controllers
                 ModelState.AddModelError("", "O pedido precisa ter pelo menos um item válido.");
             }
 
+            Endereco? enderecoSelecionado = null;
+
             if (vm.TipoAtendimento == "DeliveryProprio")
             {
-                if (string.IsNullOrWhiteSpace(vm.EnderecoEntrega))
+                if (!vm.EnderecoId.HasValue || vm.EnderecoId.Value <= 0)
                 {
-                    ModelState.AddModelError("EnderecoEntrega", "Informe o endereço de entrega.");
+                    ModelState.AddModelError("EnderecoId", "Selecione um endereço de entrega.");
                 }
-
-                if (vm.TaxaEntrega < 0)
+                else
                 {
-                    ModelState.AddModelError("TaxaEntrega", "A taxa de entrega não pode ser negativa.");
+                    enderecoSelecionado = await _context.Enderecos
+                        .FirstOrDefaultAsync(e => e.Id == vm.EnderecoId.Value && e.ClienteId == clienteId.Value);
+
+                    if (enderecoSelecionado == null)
+                    {
+                        ModelState.AddModelError("EnderecoId", "Endereço de entrega inválido.");
+                    }
                 }
             }
 
@@ -150,8 +160,8 @@ namespace RestauranteApp.Controllers
                 "DeliveryProprio" => new AtendimentoDeliveryProprio
                 {
                     Tipo = "Delivery Próprio",
-                    EnderecoEntrega = vm.EnderecoEntrega,
-                    TaxaEntrega = vm.TaxaEntrega
+                    EnderecoEntrega = FormatarEndereco(enderecoSelecionado!),
+                    TaxaEntrega = TAXA_FIXA_DELIVERY_PROPRIO
                 },
                 "DeliveryAplicativo" => new AtendimentoDeliveryAplicativo
                 {
@@ -248,9 +258,27 @@ namespace RestauranteApp.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        private void CarregarCombos()
+        private void CarregarCombos(int clienteId)
         {
             ViewBag.Produtos = new SelectList(_context.Produtos.OrderBy(p => p.Nome), "Id", "Nome");
+
+            var enderecos = _context.Enderecos
+                .Where(e => e.ClienteId == clienteId)
+                .OrderBy(e => e.Cidade)
+                .ThenBy(e => e.Rua)
+                .Select(e => new
+                {
+                    e.Id,
+                    Texto = e.Rua + ", " + e.Numero + " - " + e.Cidade + "/" + e.Estado + " - CEP " + e.CEP
+                })
+                .ToList();
+
+            ViewBag.Enderecos = new SelectList(enderecos, "Id", "Texto");
+        }
+
+        private static string FormatarEndereco(Endereco endereco)
+        {
+            return $"{endereco.Rua}, {endereco.Numero} - {endereco.Cidade}/{endereco.Estado} - CEP {endereco.CEP}";
         }
 
         private static List<PedidoCreateItemViewModel> CriarItensVazios(int quantidade)
