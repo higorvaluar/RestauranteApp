@@ -9,34 +9,80 @@
 <div>
     <h4>Pedido</h4>
     <hr />
+
     <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.DataPedido)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.DataPedido)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Total)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Total)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Periodo)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Periodo)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Cliente)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Cliente.Nome)
-        </dd>
+        <dt class="col-sm-3">Data do Pedido</dt>
+        <dd class="col-sm-9">@Model.DataPedido</dd>
+
+        <dt class="col-sm-3">Cliente</dt>
+        <dd class="col-sm-9">@Model.Cliente.Nome</dd>
+
+        <dt class="col-sm-3">Período</dt>
+        <dd class="col-sm-9">@Model.Periodo</dd>
+
+        <dt class="col-sm-3">Tipo de Atendimento</dt>
+        <dd class="col-sm-9">@Model.Atendimento?.Tipo</dd>
+
+        <dt class="col-sm-3">Taxa / Comissão</dt>
+        <dd class="col-sm-9">R$ @Model.Atendimento?.TaxaEntrega.ToString("F2")</dd>
+
+        @if (Model.Atendimento is RestauranteApp.Models.AtendimentoDeliveryProprio deliveryProprio)
+        {
+            <dt class="col-sm-3">Endereço de Entrega</dt>
+            <dd class="col-sm-9">@deliveryProprio.EnderecoEntrega</dd>
+        }
+
+        @if (Model.Atendimento is RestauranteApp.Models.AtendimentoDeliveryAplicativo deliveryApp)
+        {
+            <dt class="col-sm-3">Aplicativo</dt>
+            <dd class="col-sm-9">@deliveryApp.NomeAplicativo</dd>
+
+            <dt class="col-sm-3">Comissão</dt>
+            <dd class="col-sm-9">R$ @deliveryApp.Comissao.ToString("F2")</dd>
+        }
+
+        <dt class="col-sm-3">Total Final</dt>
+        <dd class="col-sm-9"><strong>R$ @Model.Total.ToString("F2")</strong></dd>
     </dl>
 </div>
+
+<hr />
+
+<h4>Itens do Pedido</h4>
+
+@if (Model.PedidoItens != null && Model.PedidoItens.Any())
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Produto</th>
+                <th>Quantidade</th>
+                <th>Preço Unitário</th>
+                <th>Subtotal</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.PedidoItens)
+            {
+                <tr>
+                    <td>@item.Produto.Nome</td>
+                    <td>@item.Quantidade</td>
+                    <td>R$ @item.PrecoUnitario.ToString("F2")</td>
+                    <td>R$ @item.Subtotal.ToString("F2")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <p><strong>Soma dos Itens:</strong> R$ @Model.PedidoItens.Sum(i => i.Subtotal).ToString("F2")</p>
+    <p><strong>Taxa / Comissão:</strong> R$ @Model.Atendimento?.TaxaEntrega.ToString("F2")</p>
+    <p><strong>Total Final:</strong> R$ @Model.Total.ToString("F2")</p>
+}
+else
+{
+    <p>Nenhum item encontrado para este pedido.</p>
+}
+
 <div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
     <a asp-action="Index">Back to List</a>
 </div>
