@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Pedidos</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+<nav class="navbar navbar-dark">
+  <div class="container">
+    <span class="navbar-brand">🍽 Restaurante</span>
+  </div>
+</nav>
+
+<div class="container mt-4">
+
+  <!-- ESCOLHAS -->
+  <div class="row mb-4">
+
+    <div class="col-md-4">
+      <label>Período</label>
+      <select id="periodo" class="form-select">
+        <option value="almoco">Almoço</option>
+        <option value="jantar">Jantar</option>
+      </select>
+    </div>
+
+    <div class="col-md-4">
+      <label>Atendimento</label>
+      <select id="tipo" class="form-select">
+        <option value="presencial">Presencial</option>
+        <option value="delivery">Delivery</option>
+        <option value="app">Aplicativo</option>
+      </select>
+    </div>
+
+  </div>
+
+  <!-- CARDÁPIO -->
+  <h3>Cardápio</h3>
+  <div id="itens" class="row"></div>
+
+  <!-- CARRINHO -->
+  <div class="card mt-4 p-3">
+    <h4>🛒 Seu Pedido</h4>
+    <div id="carrinho"></div>
+    <h5>Total: R$ <span id="total">0</span></h5>
+
+    <button class="btn btn-primary w-100 mt-2" onclick="finalizarPedido()">
+      Finalizar Pedido
+    </button>
+  </div>
+
+  <!-- MEUS PEDIDOS -->
+  <h3 class="mt-5">Meus Pedidos</h3>
+  <div id="meusPedidos"></div>
+
+</div>
+
+<script src="js/api.js"></script>
+<script src="js/pedidos.js"></script>
+
+</body>
+</html>
