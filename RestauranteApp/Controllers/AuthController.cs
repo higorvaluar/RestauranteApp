@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RestauranteApp.Data;
 using RestauranteApp.Models;
@@ -9,6 +10,7 @@ namespace RestauranteApp.Controllers
     public class AuthController : Controller
     {
         private readonly AppDbContext _context;
+        private readonly PasswordHasher<Cliente> _passwordHasher = new();
 
         public AuthController(AppDbContext context)
         {
@@ -44,9 +46,10 @@ namespace RestauranteApp.Controllers
             {
                 Nome = vm.Nome,
                 Email = vm.Email,
-                Senha = vm.Senha,
                 Telefone = vm.Telefone
             };
+
+            cliente.Senha = _passwordHasher.HashPassword(cliente, vm.Senha);
 
             _context.Clientes.Add(cliente);
             await _context.SaveChangesAsync();
@@ -74,12 +77,43 @@ namespace RestauranteApp.Controllers
             }
 
             var cliente = await _context.Clientes
-                .FirstOrDefaultAsync(c => c.Email == vm.Email && c.Senha == vm.Senha);
+                .FirstOrDefaultAsync(c => c.Email == vm.Email);
 
             if (cliente == null)
             {
                 ModelState.AddModelError("", "E-mail ou senha inválidos.");
                 return View(vm);
+            }
+
+            PasswordVerificationResult resultado;
+
+            try
+            {
+                resultado = _passwordHasher.VerifyHashedPassword(cliente, cliente.Senha, vm.Senha);
+
+                if (resultado == PasswordVerificationResult.Failed)
+                {
+                    ModelState.AddModelError("", "E-mail ou senha inválidos.");
+                    return View(vm);
+                }
+
+                if (resultado == PasswordVerificationResult.SuccessRehashNeeded)
+                {
+                    cliente.Senha = _passwordHasher.HashPassword(cliente, vm.Senha);
+                    await _context.SaveChangesAsync();
+                }
+            }
+            catch (FormatException)
+            {
+                // Compatibilidade com usuários antigos em texto puro
+                if (cliente.Senha != vm.Senha)
+                {
+                    ModelState.AddModelError("", "E-mail ou senha inválidos.");
+                    return View(vm);
+                }
+
+                cliente.Senha = _passwordHasher.HashPassword(cliente, vm.Senha);
+                await _context.SaveChangesAsync();
             }
 
             HttpContext.Session.SetInt32("ClienteId", cliente.Id);

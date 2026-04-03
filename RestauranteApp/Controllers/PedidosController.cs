@@ -104,6 +104,7 @@ namespace RestauranteApp.Controllers
             }
 
             vm.ClienteId = clienteId.Value;
+            vm.DataPedido = DateTime.Now;
 
             GarantirItens(vm, 3);
             CarregarCombos(clienteId.Value);
@@ -154,7 +155,7 @@ namespace RestauranteApp.Controllers
 
             var pedido = new Pedido
             {
-                DataPedido = vm.DataPedido,
+                DataPedido = DateTime.Now,
                 Periodo = vm.Periodo,
                 ClienteId = vm.ClienteId,
                 PedidoItens = itensValidos.Select(i => new PedidoItem

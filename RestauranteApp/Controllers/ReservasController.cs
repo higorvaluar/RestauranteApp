@@ -10,6 +10,9 @@ namespace RestauranteApp.Controllers
     {
         private readonly AppDbContext _context;
 
+        private static readonly TimeSpan InicioAlmoco = new(11, 0, 0);
+        private static readonly TimeSpan FimAlmoco = new(14, 0, 0);
+
         public ReservasController(AppDbContext context)
         {
             _context = context;
@@ -48,7 +51,7 @@ namespace RestauranteApp.Controllers
             var reserva = new Reserva
             {
                 ClienteId = clienteId.Value,
-                DataReserva = DateTime.Today.AddDays(1).AddHours(19),
+                DataReserva = DateTime.Today.AddDays(1).AddHours(12),
                 QuantidadePessoas = 1
             };
 
@@ -178,12 +181,10 @@ namespace RestauranteApp.Controllers
             }
 
             var hora = reserva.DataReserva.TimeOfDay;
-            var inicio = new TimeSpan(19, 0, 0);
-            var fim = new TimeSpan(22, 0, 0);
 
-            if (hora < inicio || hora > fim)
+            if (hora < InicioAlmoco || hora > FimAlmoco)
             {
-                ModelState.AddModelError("DataReserva", "A reserva deve ser feita no horário do jantar (19:00 às 22:00).");
+                ModelState.AddModelError("DataReserva", "A reserva deve ser feita no horário do almoço (11:00 às 14:00).");
             }
 
             var mesa = await _context.Mesas.FindAsync(reserva.MesaId);
