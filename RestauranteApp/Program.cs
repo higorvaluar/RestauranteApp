@@ -11,6 +11,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddScoped<PedidoService>();
+builder.Services.AddScoped<ReservaService>();
 
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>

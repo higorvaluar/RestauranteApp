@@ -1,4 +1,4 @@
-const API_URL = "https://SEU_BACKEND_URL";
+const API_URL = "https://localhost:7189";
 
 async function getData(endpoint) {
     const response = await fetch(API_URL + endpoint, {
