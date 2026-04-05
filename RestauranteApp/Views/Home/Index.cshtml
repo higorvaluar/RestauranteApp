@@ -14,7 +14,7 @@
         <div class="border rounded p-3 h-100">
             <h3>Sugestão do Chefe - Almoço</h3>
 
-            @if (Model.SugestaoAlmoco != null)
+            @if (Model.SugestaoAlmoco?.Produto != null)
             {
                 <p><strong>Prato:</strong> @Model.SugestaoAlmoco.Produto.Nome</p>
                 <p><strong>Descrição:</strong> @Model.SugestaoAlmoco.Produto.Descricao</p>
@@ -36,7 +36,7 @@
         <div class="border rounded p-3 h-100">
             <h3>Sugestão do Chefe - Jantar</h3>
 
-            @if (Model.SugestaoJantar != null)
+            @if (Model.SugestaoJantar?.Produto != null)
             {
                 <p><strong>Prato:</strong> @Model.SugestaoJantar.Produto.Nome</p>
                 <p><strong>Descrição:</strong> @Model.SugestaoJantar.Produto.Descricao</p>

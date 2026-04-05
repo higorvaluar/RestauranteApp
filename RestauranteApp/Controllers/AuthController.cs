@@ -33,6 +33,8 @@ namespace RestauranteApp.Controllers
                 return View(vm);
             }
 
+            vm.Email = vm.Email.Trim();
+
             bool emailJaExiste = await _context.Clientes
                 .AnyAsync(c => c.Email == vm.Email);
 

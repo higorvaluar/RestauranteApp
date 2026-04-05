@@ -11,6 +11,6 @@
         public decimal PercentualDesconto { get; set; } = 20;
 
         public int ProdutoId { get; set; }
-        public Produto Produto { get; set; } = null!;
+        public Produto? Produto { get; set; }
     }
 }

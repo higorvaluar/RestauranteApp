@@ -1,8 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RestauranteApp.Data;
 using RestauranteApp.Models;
@@ -46,22 +42,32 @@ namespace RestauranteApp.Controllers
         }
 
         // GET: SugestaoChefes/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            ViewData["ProdutoId"] = new SelectList(_context.Produtos, "Id", "Nome");
-            return View();
+            await CarregarProdutosAsync();
+
+            return View(new SugestaoChefe
+            {
+                Data = DateTime.Today,
+                Periodo = PeriodoEnum.Almoco,
+                PercentualDesconto = 20
+            });
         }
 
         // POST: SugestaoChefes/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Data,Periodo,PercentualDesconto,ProdutoId")] SugestaoChefe sugestaoChefe)
+        public async Task<IActionResult> Create([Bind("Id,Data,Periodo,ProdutoId")] SugestaoChefe sugestaoChefe)
         {
+            sugestaoChefe.PercentualDesconto = 20;
+
+            ModelState.Remove(nameof(SugestaoChefe.Produto));
+
             await ValidarSugestaoChefe(sugestaoChefe);
 
             if (!ModelState.IsValid)
             {
-                ViewData["ProdutoId"] = new SelectList(_context.Produtos, "Id", "Nome", sugestaoChefe.ProdutoId);
+                await CarregarProdutosAsync();
                 return View(sugestaoChefe);
             }
 
@@ -74,7 +80,7 @@ namespace RestauranteApp.Controllers
             catch (DbUpdateException)
             {
                 ModelState.AddModelError("", "Não foi possível salvar. Verifique se já existe uma sugestão para essa data e período.");
-                ViewData["ProdutoId"] = new SelectList(_context.Produtos, "Id", "Nome", sugestaoChefe.ProdutoId);
+                await CarregarProdutosAsync();
                 return View(sugestaoChefe);
             }
         }
@@ -93,25 +99,29 @@ namespace RestauranteApp.Controllers
                 return NotFound();
             }
 
-            ViewData["ProdutoId"] = new SelectList(_context.Produtos, "Id", "Nome", sugestaoChefe.ProdutoId);
+            await CarregarProdutosAsync();
             return View(sugestaoChefe);
         }
 
         // POST: SugestaoChefes/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Data,Periodo,PercentualDesconto,ProdutoId")] SugestaoChefe sugestaoChefe)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Data,Periodo,ProdutoId")] SugestaoChefe sugestaoChefe)
         {
             if (id != sugestaoChefe.Id)
             {
                 return NotFound();
             }
 
+            sugestaoChefe.PercentualDesconto = 20;
+
+            ModelState.Remove(nameof(SugestaoChefe.Produto));
+
             await ValidarSugestaoChefe(sugestaoChefe, id);
 
             if (!ModelState.IsValid)
             {
-                ViewData["ProdutoId"] = new SelectList(_context.Produtos, "Id", "Nome", sugestaoChefe.ProdutoId);
+                await CarregarProdutosAsync();
                 return View(sugestaoChefe);
             }
 
@@ -126,12 +136,13 @@ namespace RestauranteApp.Controllers
                 {
                     return NotFound();
                 }
+
                 throw;
             }
             catch (DbUpdateException)
             {
                 ModelState.AddModelError("", "Não foi possível salvar. Verifique se já existe uma sugestão para essa data e período.");
-                ViewData["ProdutoId"] = new SelectList(_context.Produtos, "Id", "Nome", sugestaoChefe.ProdutoId);
+                await CarregarProdutosAsync();
                 return View(sugestaoChefe);
             }
 
@@ -178,6 +189,14 @@ namespace RestauranteApp.Controllers
             return _context.SugestoesChefe.Any(e => e.Id == id);
         }
 
+        private async Task CarregarProdutosAsync()
+        {
+            ViewBag.Produtos = await _context.Produtos
+                .AsNoTracking()
+                .OrderBy(p => p.Nome)
+                .ToListAsync();
+        }
+
         private async Task ValidarSugestaoChefe(SugestaoChefe sugestaoChefe, int? idIgnorar = null)
         {
             var produto = await _context.Produtos.FindAsync(sugestaoChefe.ProdutoId);
@@ -211,7 +230,7 @@ namespace RestauranteApp.Controllers
 
             if (sugestaoChefe.PercentualDesconto != 20)
             {
-                ModelState.AddModelError("PercentualDesconto", "O percentual de desconto deve ser 20.");
+                ModelState.AddModelError("", "O desconto da Sugestão do Chefe deve ser de 20%.");
             }
         }
     }

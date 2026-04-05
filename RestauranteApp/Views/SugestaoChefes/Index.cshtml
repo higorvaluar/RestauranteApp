@@ -1,53 +1,39 @@
 ﻿@model IEnumerable<RestauranteApp.Models.SugestaoChefe>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Sugestões do Chefe";
 }
 
-<h1>Index</h1>
+<h1>Sugestões do Chefe</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create" class="btn btn-primary">Nova Sugestão</a>
 </p>
+
 <table class="table">
     <thead>
         <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Data)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Periodo)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.PercentualDesconto)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Produto)
-            </th>
+            <th>Data</th>
+            <th>Período</th>
+            <th>Desconto</th>
+            <th>Produto</th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Data)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Periodo)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PercentualDesconto)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Produto.Nome)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Data.ToString("dd/MM/yyyy")</td>
+                <td>@item.Periodo</td>
+                <td>@item.PercentualDesconto.ToString("F0")%</td>
+                <td>@(item.Produto?.Nome ?? "Produto não encontrado")</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id">Editar</a> |
+                    <a asp-action="Details" asp-route-id="@item.Id">Detalhes</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id">Excluir</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
