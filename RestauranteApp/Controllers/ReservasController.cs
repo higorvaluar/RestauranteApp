@@ -27,10 +27,19 @@ namespace RestauranteApp.Controllers
                 return RedirectToAction("Login", "Auth");
             }
 
-            var reservas = await _context.Reservas
+            var admin = UsuarioAdmin();
+
+            var query = _context.Reservas
                 .Include(r => r.Cliente)
                 .Include(r => r.Mesa)
-                .Where(r => r.ClienteId == clienteId.Value)
+                .AsQueryable();
+
+            if (!admin)
+            {
+                query = query.Where(r => r.ClienteId == clienteId.Value);
+            }
+
+            var reservas = await query
                 .OrderBy(r => r.DataReserva)
                 .ToListAsync();
 
@@ -41,9 +50,9 @@ namespace RestauranteApp.Controllers
         public IActionResult Create()
         {
             var clienteId = HttpContext.Session.GetInt32("ClienteId");
-            if (clienteId == null)
+            if (UsuarioAdmin())
             {
-                return RedirectToAction("Login", "Auth");
+                return RedirectToAction(nameof(Index));
             }
 
             CarregarCombos();
@@ -65,9 +74,9 @@ namespace RestauranteApp.Controllers
         public async Task<IActionResult> Create([Bind("Id,DataReserva,QuantidadePessoas,ClienteId,MesaId")] Reserva reserva)
         {
             var clienteId = HttpContext.Session.GetInt32("ClienteId");
-            if (clienteId == null)
+            if (UsuarioAdmin())
             {
-                return RedirectToAction("Login", "Auth");
+                return RedirectToAction(nameof(Index));
             }
 
             reserva.ClienteId = clienteId.Value;
@@ -101,8 +110,12 @@ namespace RestauranteApp.Controllers
                 return RedirectToAction("Login", "Auth");
             }
 
+            var admin = UsuarioAdmin();
+
             var reserva = await _context.Reservas
-                .FirstOrDefaultAsync(r => r.Id == id && r.ClienteId == clienteId.Value);
+                .FirstOrDefaultAsync(r =>
+                    r.Id == id &&
+                    (admin || r.ClienteId == clienteId.Value));
 
             if (reserva == null)
             {
@@ -110,7 +123,7 @@ namespace RestauranteApp.Controllers
             }
 
             CarregarCombos(reserva.MesaId);
-            ViewBag.ClienteNome = HttpContext.Session.GetString("ClienteNome");
+            ViewBag.ClienteNome = admin ? "Administrador" : HttpContext.Session.GetString("ClienteNome");
             return View(reserva);
         }
 
@@ -130,14 +143,27 @@ namespace RestauranteApp.Controllers
                 return RedirectToAction("Login", "Auth");
             }
 
-            reserva.ClienteId = clienteId.Value;
+            var admin = UsuarioAdmin();
+
+            var reservaBanco = await _context.Reservas
+                .AsNoTracking()
+                .FirstOrDefaultAsync(r =>
+                    r.Id == id &&
+                    (admin || r.ClienteId == clienteId.Value));
+
+            if (reservaBanco == null)
+            {
+                return NotFound();
+            }
+
+            reserva.ClienteId = admin ? reservaBanco.ClienteId : clienteId.Value;
 
             await ValidarReservaAsync(reserva, id);
 
             if (!ModelState.IsValid)
             {
                 CarregarCombos(reserva.MesaId);
-                ViewBag.ClienteNome = HttpContext.Session.GetString("ClienteNome");
+                ViewBag.ClienteNome = admin ? "Administrador" : HttpContext.Session.GetString("ClienteNome");
                 return View(reserva);
             }
 
@@ -148,7 +174,7 @@ namespace RestauranteApp.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!ReservaExists(reserva.Id, clienteId.Value))
+                if (!ReservaExists(reserva.Id, admin ? null : clienteId.Value))
                 {
                     return NotFound();
                 }
@@ -217,9 +243,19 @@ namespace RestauranteApp.Controllers
             }
         }
 
-        private bool ReservaExists(int id, int clienteId)
+        private bool ReservaExists(int id, int? clienteId = null)
         {
-            return _context.Reservas.Any(e => e.Id == id && e.ClienteId == clienteId);
+            if (clienteId.HasValue)
+            {
+                return _context.Reservas.Any(e => e.Id == id && e.ClienteId == clienteId.Value);
+            }
+
+            return _context.Reservas.Any(e => e.Id == id);
+        }
+
+        private bool UsuarioAdmin()
+        {
+            return HttpContext.Session.GetInt32("Admin") == 1;
         }
     }
 }

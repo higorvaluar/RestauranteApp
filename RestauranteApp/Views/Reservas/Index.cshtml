@@ -1,16 +1,20 @@
 ﻿@model IEnumerable<RestauranteApp.Models.Reserva>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Reservas";
+    var admin = Context.Session.GetInt32("Admin") == 1;
 }
 
 <h1>Reservas</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
+@if (!admin)
+{
+    <p>
+        <a asp-action="Create" class="btn btn-primary">Nova Reserva</a>
+    </p>
+}
 
-<table class="table">
+<table class="table table-bordered">
     <thead>
         <tr>
             <th>Data da Reserva</th>
@@ -29,7 +33,7 @@
                 <td>@item.Cliente.Nome</td>
                 <td>@item.Mesa.Numero</td>
                 <td>
-                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+                    <a asp-action="Edit" asp-route-id="@item.Id">Editar</a>
                 </td>
             </tr>
         }

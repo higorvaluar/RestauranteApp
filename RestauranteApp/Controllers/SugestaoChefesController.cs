@@ -17,6 +17,12 @@ namespace RestauranteApp.Controllers
         // GET: SugestaoChefes
         public async Task<IActionResult> Index()
         {
+            var acesso = ExigirAdmin();
+            if (acesso != null)
+            {
+                return acesso;
+            }
+
             var appDbContext = _context.SugestoesChefe.Include(s => s.Produto);
             return View(await appDbContext.ToListAsync());
         }
@@ -24,6 +30,12 @@ namespace RestauranteApp.Controllers
         // GET: SugestaoChefes/Details/5
         public async Task<IActionResult> Details(int? id)
         {
+            var acesso = ExigirAdmin();
+            if (acesso != null)
+            {
+                return acesso;
+            }
+
             if (id == null)
             {
                 return NotFound();
@@ -44,6 +56,12 @@ namespace RestauranteApp.Controllers
         // GET: SugestaoChefes/Create
         public async Task<IActionResult> Create()
         {
+            var acesso = ExigirAdmin();
+            if (acesso != null)
+            {
+                return acesso;
+            }
+
             await CarregarProdutosAsync();
 
             return View(new SugestaoChefe
@@ -59,6 +77,12 @@ namespace RestauranteApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Data,Periodo,ProdutoId")] SugestaoChefe sugestaoChefe)
         {
+            var acesso = ExigirAdmin();
+            if (acesso != null)
+            {
+                return acesso;
+            }
+
             sugestaoChefe.PercentualDesconto = 20;
 
             ModelState.Remove(nameof(SugestaoChefe.Produto));
@@ -88,6 +112,12 @@ namespace RestauranteApp.Controllers
         // GET: SugestaoChefes/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
+            var acesso = ExigirAdmin();
+            if (acesso != null)
+            {
+                return acesso;
+            }
+
             if (id == null)
             {
                 return NotFound();
@@ -108,6 +138,12 @@ namespace RestauranteApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Data,Periodo,ProdutoId")] SugestaoChefe sugestaoChefe)
         {
+            var acesso = ExigirAdmin();
+            if (acesso != null)
+            {
+                return acesso;
+            }
+
             if (id != sugestaoChefe.Id)
             {
                 return NotFound();
@@ -152,6 +188,12 @@ namespace RestauranteApp.Controllers
         // GET: SugestaoChefes/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
+            var acesso = ExigirAdmin();
+            if (acesso != null)
+            {
+                return acesso;
+            }
+
             if (id == null)
             {
                 return NotFound();
@@ -174,6 +216,12 @@ namespace RestauranteApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
+            var acesso = ExigirAdmin();
+            if (acesso != null)
+            {
+                return acesso;
+            }
+
             var sugestaoChefe = await _context.SugestoesChefe.FindAsync(id);
             if (sugestaoChefe != null)
             {
@@ -232,6 +280,23 @@ namespace RestauranteApp.Controllers
             {
                 ModelState.AddModelError("", "O desconto da Sugestão do Chefe deve ser de 20%.");
             }
+        }
+
+        private IActionResult? ExigirAdmin()
+        {
+            var clienteId = HttpContext.Session.GetInt32("ClienteId");
+
+            if (clienteId == null)
+            {
+                return RedirectToAction("Login", "Auth");
+            }
+
+            if (HttpContext.Session.GetInt32("Admin") != 1)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            return null;
         }
     }
 }

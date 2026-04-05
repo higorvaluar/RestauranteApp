@@ -1,5 +1,11 @@
-﻿<!DOCTYPE html>
-<html lang="en">
+﻿@{
+    var clienteId = Context.Session.GetInt32("ClienteId");
+    var admin = Context.Session.GetInt32("Admin") == 1;
+    var clienteNome = Context.Session.GetString("ClienteNome");
+}
+
+<!DOCTYPE html>
+<html lang="pt-BR">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -14,37 +20,19 @@
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container-fluid">
                 <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">RestauranteApp</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
+
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse"
+                        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Alternar navegação">
                     <span class="navbar-toggler-icon"></span>
                 </button>
+
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
 
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-controller="SugestaoChefes" asp-action="Index">Sugestão do Chefe</a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-controller="Pedidos" asp-action="Index">Pedidos</a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-controller="Enderecos" asp-action="Index">Endereços</a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-controller="Reservas" asp-action="Index">Reservas</a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-controller="Relatorios" asp-action="Index">Relatórios</a>
-                        </li>
-
-                        @if (Context.Session.GetInt32("ClienteId") == null)
+                        @if (clienteId == null)
                         {
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-controller="Auth" asp-action="Login">Login</a>
@@ -53,11 +41,50 @@
                                 <a class="nav-link text-dark" asp-controller="Auth" asp-action="Register">Cadastro</a>
                             </li>
                         }
+                        else if (admin)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="SugestaoChefes" asp-action="Index">Sugestão do Chefe</a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Pedidos" asp-action="Index">Pedidos</a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Reservas" asp-action="Index">Reservas</a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Relatorios" asp-action="Index">Relatórios</a>
+                            </li>
+
+                            <li class="nav-item">
+                                <span class="nav-link text-dark">Olá, @clienteNome (Admin)</span>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Auth" asp-action="Logout">Sair</a>
+                            </li>
+                        }
                         else
                         {
                             <li class="nav-item">
-                                <span class="nav-link text-dark">Olá, @Context.Session.GetString("ClienteNome")</span>
+                                <a class="nav-link text-dark" asp-controller="Pedidos" asp-action="Index">Pedidos</a>
                             </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Enderecos" asp-action="Index">Endereços</a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Reservas" asp-action="Index">Reservas</a>
+                            </li>
+
+                            <li class="nav-item">
+                                <span class="nav-link text-dark">Olá, @clienteNome</span>
+                            </li>
+
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-controller="Auth" asp-action="Logout">Sair</a>
                             </li>
@@ -67,6 +94,7 @@
             </div>
         </nav>
     </header>
+
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()
@@ -78,6 +106,7 @@
             &copy; 2026 - RestauranteApp - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>

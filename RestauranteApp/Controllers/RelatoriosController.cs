@@ -14,18 +14,28 @@ namespace RestauranteApp.Controllers
             _context = context;
         }
 
-        // GET: Relatorios
         public IActionResult Index()
         {
+            var acesso = ExigirAdmin();
+            if (acesso != null)
+            {
+                return acesso;
+            }
+
             var vm = new RelatoriosViewModel();
             return View(vm);
         }
 
-        // POST: Relatorios
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Index(RelatoriosViewModel vm)
         {
+            var acesso = ExigirAdmin();
+            if (acesso != null)
+            {
+                return acesso;
+            }
+
             if (vm.DataFinal < vm.DataInicial)
             {
                 ModelState.AddModelError("", "A data final não pode ser menor que a data inicial.");
@@ -85,6 +95,23 @@ namespace RestauranteApp.Controllers
                 .ToList();
 
             return View(vm);
+        }
+
+        private IActionResult? ExigirAdmin()
+        {
+            var clienteId = HttpContext.Session.GetInt32("ClienteId");
+
+            if (clienteId == null)
+            {
+                return RedirectToAction("Login", "Auth");
+            }
+
+            if (HttpContext.Session.GetInt32("Admin") != 1)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            return null;
         }
     }
 }

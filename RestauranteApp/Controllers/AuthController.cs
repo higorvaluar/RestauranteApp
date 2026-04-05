@@ -17,13 +17,11 @@ namespace RestauranteApp.Controllers
             _context = context;
         }
 
-        // GET: Auth/Register
         public IActionResult Register()
         {
             return View();
         }
 
-        // POST: Auth/Register
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterViewModel vm)
@@ -48,7 +46,8 @@ namespace RestauranteApp.Controllers
             {
                 Nome = vm.Nome,
                 Email = vm.Email,
-                Telefone = vm.Telefone
+                Telefone = vm.Telefone,
+                Admin = false
             };
 
             cliente.Senha = _passwordHasher.HashPassword(cliente, vm.Senha);
@@ -58,17 +57,16 @@ namespace RestauranteApp.Controllers
 
             HttpContext.Session.SetInt32("ClienteId", cliente.Id);
             HttpContext.Session.SetString("ClienteNome", cliente.Nome);
+            HttpContext.Session.SetInt32("Admin", cliente.Admin ? 1 : 0);
 
             return RedirectToAction("Index", "Home");
         }
 
-        // GET: Auth/Login
         public IActionResult Login()
         {
             return View();
         }
 
-        // POST: Auth/Login
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginViewModel vm)
@@ -107,7 +105,6 @@ namespace RestauranteApp.Controllers
             }
             catch (FormatException)
             {
-                // Compatibilidade com usuários antigos em texto puro
                 if (cliente.Senha != vm.Senha)
                 {
                     ModelState.AddModelError("", "E-mail ou senha inválidos.");
@@ -120,11 +117,11 @@ namespace RestauranteApp.Controllers
 
             HttpContext.Session.SetInt32("ClienteId", cliente.Id);
             HttpContext.Session.SetString("ClienteNome", cliente.Nome);
+            HttpContext.Session.SetInt32("Admin", cliente.Admin ? 1 : 0);
 
             return RedirectToAction("Index", "Home");
         }
 
-        // GET: Auth/Logout
         public IActionResult Logout()
         {
             HttpContext.Session.Clear();

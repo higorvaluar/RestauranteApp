@@ -7,7 +7,9 @@
         public string Email { get; set; } = string.Empty;
         public string Senha { get; set; } = string.Empty;
         public string Telefone { get; set; } = string.Empty;
-        public List<Endereco> Enderecos { get; set; } = new List<Endereco>();
+        public bool Admin { get; set; } = false;
+
+        public List<Endereco> Enderecos { get; set; } = new();
         public List<Reserva> Reservas { get; set; } = new();
         public List<Pedido> Pedidos { get; set; } = new();
     }

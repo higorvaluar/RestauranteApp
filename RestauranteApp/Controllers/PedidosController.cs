@@ -29,10 +29,21 @@ namespace RestauranteApp.Controllers
                 return RedirectToAction("Login", "Auth");
             }
 
-            var pedidos = await _context.Pedidos
+            var admin = UsuarioAdmin();
+
+            var query = _context.Pedidos
                 .Include(p => p.Cliente)
                 .Include(p => p.Atendimento)
-                .Where(p => p.ClienteId == clienteId.Value)
+                .Include(p => p.PedidoItens)
+                    .ThenInclude(pi => pi.Produto)
+                .AsQueryable();
+
+            if (!admin)
+            {
+                query = query.Where(p => p.ClienteId == clienteId.Value);
+            }
+
+            var pedidos = await query
                 .OrderByDescending(p => p.DataPedido)
                 .ToListAsync();
 
@@ -53,12 +64,16 @@ namespace RestauranteApp.Controllers
                 return RedirectToAction("Login", "Auth");
             }
 
+            var admin = UsuarioAdmin();
+
             var pedido = await _context.Pedidos
                 .Include(p => p.Cliente)
                 .Include(p => p.Atendimento)
                 .Include(p => p.PedidoItens)
                     .ThenInclude(pi => pi.Produto)
-                .FirstOrDefaultAsync(m => m.Id == id && m.ClienteId == clienteId.Value);
+                .FirstOrDefaultAsync(m =>
+                    m.Id == id &&
+                    (admin || m.ClienteId == clienteId.Value));
 
             if (pedido == null)
             {
@@ -72,9 +87,9 @@ namespace RestauranteApp.Controllers
         public IActionResult Create()
         {
             var clienteId = HttpContext.Session.GetInt32("ClienteId");
-            if (clienteId == null)
+            if (UsuarioAdmin())
             {
-                return RedirectToAction("Login", "Auth");
+                return RedirectToAction(nameof(Index));
             }
 
             var vm = new PedidoCreateViewModel
@@ -98,9 +113,9 @@ namespace RestauranteApp.Controllers
         public async Task<IActionResult> Create(PedidoCreateViewModel vm)
         {
             var clienteId = HttpContext.Session.GetInt32("ClienteId");
-            if (clienteId == null)
+            if (UsuarioAdmin())
             {
-                return RedirectToAction("Login", "Auth");
+                return RedirectToAction(nameof(Index));
             }
 
             vm.ClienteId = clienteId.Value;
@@ -222,11 +237,15 @@ namespace RestauranteApp.Controllers
                 return RedirectToAction("Login", "Auth");
             }
 
+            var admin = UsuarioAdmin();
+
             var pedido = await _context.Pedidos
                 .Include(p => p.Cliente)
                 .Include(p => p.Atendimento)
                 .Include(p => p.PedidoItens)
-                .FirstOrDefaultAsync(p => p.Id == id && p.ClienteId == clienteId.Value);
+                .FirstOrDefaultAsync(p =>
+                    p.Id == id &&
+                    (admin || p.ClienteId == clienteId.Value));
 
             if (pedido == null)
             {
@@ -258,9 +277,13 @@ namespace RestauranteApp.Controllers
                 return RedirectToAction("Login", "Auth");
             }
 
+            var admin = UsuarioAdmin();
+
             var pedido = await _context.Pedidos
                 .Include(p => p.Cliente)
-                .FirstOrDefaultAsync(m => m.Id == id && m.ClienteId == clienteId.Value);
+                .FirstOrDefaultAsync(m =>
+                    m.Id == id &&
+                    (admin || m.ClienteId == clienteId.Value));
 
             if (pedido == null)
             {
@@ -281,8 +304,12 @@ namespace RestauranteApp.Controllers
                 return RedirectToAction("Login", "Auth");
             }
 
+            var admin = UsuarioAdmin();
+
             var pedido = await _context.Pedidos
-                .FirstOrDefaultAsync(p => p.Id == id && p.ClienteId == clienteId.Value);
+                .FirstOrDefaultAsync(p =>
+                    p.Id == id &&
+                    (admin || p.ClienteId == clienteId.Value));
 
             if (pedido != null)
             {
@@ -336,6 +363,11 @@ namespace RestauranteApp.Controllers
             {
                 vm.Itens.Add(new PedidoCreateItemViewModel());
             }
+        }
+
+        private bool UsuarioAdmin()
+        {
+            return HttpContext.Session.GetInt32("Admin") == 1;
         }
     }
 }
