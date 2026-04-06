@@ -40,7 +40,33 @@
                         <ul class="mb-0 ps-3">
                             @foreach (var pedidoItem in item.PedidoItens)
                             {
-                                <li>@pedidoItem.Produto.Nome x@pedidoItem.Quantidade</li>
+                                var precoBaseTotal = pedidoItem.PrecoUnitario * pedidoItem.Quantidade;
+                                var temDesconto = pedidoItem.Subtotal < precoBaseTotal;
+                                var precoComDescontoUnitario = pedidoItem.Quantidade > 0
+                                    ? pedidoItem.Subtotal / pedidoItem.Quantidade
+                                    : pedidoItem.PrecoUnitario;
+
+                                <li>
+                                    <strong>@pedidoItem.Produto.Nome</strong>
+                                    - Qtd: @pedidoItem.Quantidade
+
+                                    @if (temDesconto)
+                                    {
+                                        <span>
+                                            - <strong class="text-success">Sugestão do Chefe (-20%)</strong>
+                                            - Preço base: R$ @pedidoItem.PrecoUnitario.ToString("F2")
+                                            - Com desconto: R$ @precoComDescontoUnitario.ToString("F2")
+                                            - Subtotal: R$ @pedidoItem.Subtotal.ToString("F2")
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span>
+                                            - Unitário: R$ @pedidoItem.PrecoUnitario.ToString("F2")
+                                            - Subtotal: R$ @pedidoItem.Subtotal.ToString("F2")
+                                        </span>
+                                    }
+                                </li>
                             }
                         </ul>
                     }

@@ -1,10 +1,10 @@
 ﻿@model RestauranteApp.Models.Pedido
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Detalhes do Pedido";
 }
 
-<h1>Details</h1>
+<h1>Detalhes</h1>
 
 <div>
     <h4>Pedido</h4>
@@ -57,17 +57,40 @@
             <tr>
                 <th>Produto</th>
                 <th>Quantidade</th>
-                <th>Preço Unitário</th>
+                <th>Preço</th>
                 <th>Subtotal</th>
             </tr>
         </thead>
         <tbody>
             @foreach (var item in Model.PedidoItens)
             {
+                var precoBaseTotal = item.PrecoUnitario * item.Quantidade;
+                var temDesconto = item.Subtotal < precoBaseTotal;
+                var precoComDescontoUnitario = item.Quantidade > 0
+                    ? item.Subtotal / item.Quantidade
+                    : item.PrecoUnitario;
+
                 <tr>
-                    <td>@item.Produto.Nome</td>
+                    <td>
+                        @item.Produto.Nome
+                        @if (temDesconto)
+                        {
+                            <div class="text-success"><strong>Sugestão do Chefe (-20%)</strong></div>
+                        }
+                    </td>
                     <td>@item.Quantidade</td>
-                    <td>R$ @item.PrecoUnitario.ToString("F2")</td>
+                    <td>
+                        @if (temDesconto)
+                        {
+                            <span>Base: R$ @item.PrecoUnitario.ToString("F2")</span>
+                            <br />
+                            <span>Com desconto: R$ @precoComDescontoUnitario.ToString("F2")</span>
+                        }
+                        else
+                        {
+                            <span>R$ @item.PrecoUnitario.ToString("F2")</span>
+                        }
+                    </td>
                     <td>R$ @item.Subtotal.ToString("F2")</td>
                 </tr>
             }
@@ -84,5 +107,5 @@ else
 }
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index">Voltar para a lista</a>
 </div>

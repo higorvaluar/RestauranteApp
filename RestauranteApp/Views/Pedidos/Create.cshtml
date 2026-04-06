@@ -1,30 +1,45 @@
 ﻿@model RestauranteApp.ViewModels.PedidoCreateViewModel
+@using RestauranteApp.Models
+@using System.Text.Json
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Criar Pedido";
+
+    var produtos = ViewBag.Produtos as List<Produto> ?? new List<Produto>();
+
+    var produtosJson = JsonSerializer.Serialize(
+        produtos.Select(p => new
+        {
+            id = p.Id,
+            nome = p.Nome,
+            periodo = (int)p.Periodo
+        })
+    );
 }
 
-<h1>Create</h1>
+<h1>Criar Pedido</h1>
 
 <h4>Pedido</h4>
 <hr />
 <div class="row">
     <div class="col-md-6">
-        <form asp-action="Create">
+        <form asp-action="Create" method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
             <input asp-for="ClienteId" type="hidden" />
 
             <div class="form-group mb-3">
-                <label asp-for="DataPedido" class="control-label"></label>
-                <input asp-for="DataPedido" class="form-control" />
+                <label asp-for="DataPedido" class="control-label">Data do Pedido</label>
+                <input asp-for="DataPedido" class="form-control" readonly />
                 <span asp-validation-for="DataPedido" class="text-danger"></span>
             </div>
 
             <div class="form-group mb-3">
-                <label asp-for="Periodo" class="control-label"></label>
-                <select asp-for="Periodo" class="form-control"
-                        asp-items="Html.GetEnumSelectList<RestauranteApp.Models.PeriodoEnum>()">
+                <label asp-for="Periodo" class="control-label">Período</label>
+                <select asp-for="Periodo"
+                        id="Periodo"
+                        class="form-control"
+                        asp-items="Html.GetEnumSelectList<PeriodoEnum>()">
                 </select>
                 <span asp-validation-for="Periodo" class="text-danger"></span>
             </div>
@@ -35,7 +50,7 @@
             </div>
 
             <div class="form-group mb-3">
-                <label asp-for="TipoAtendimento" class="control-label"></label>
+                <label asp-for="TipoAtendimento" class="control-label">Tipo de Atendimento</label>
                 <select asp-for="TipoAtendimento" class="form-control">
                     <option value="Presencial">Presencial</option>
                     <option value="DeliveryProprio">Delivery Próprio</option>
@@ -50,7 +65,7 @@
             </div>
 
             <div class="form-group mb-3">
-                <label asp-for="EnderecoId" class="control-label"></label>
+                <label asp-for="EnderecoId" class="control-label">Endereço de Entrega</label>
                 <select asp-for="EnderecoId" class="form-control" asp-items="ViewBag.Enderecos">
                     <option value="">Selecione um endereço</option>
                 </select>
@@ -58,7 +73,7 @@
             </div>
 
             <div class="form-group mb-3">
-                <label asp-for="NomeAplicativo" class="control-label"></label>
+                <label asp-for="NomeAplicativo" class="control-label">Aplicativo</label>
                 <input asp-for="NomeAplicativo" class="form-control" />
                 <span asp-validation-for="NomeAplicativo" class="text-danger"></span>
             </div>
@@ -71,7 +86,9 @@
                 <div class="border rounded p-3 mb-3">
                     <div class="form-group mb-2">
                         <label asp-for="Itens[i].ProdutoId" class="control-label">Produto</label>
-                        <select asp-for="Itens[i].ProdutoId" class="form-control" asp-items="ViewBag.Produtos">
+                        <select asp-for="Itens[i].ProdutoId"
+                                class="form-control produto-select"
+                                data-selected="@(Model.Itens[i].ProdutoId?.ToString() ?? "")">
                             <option value="">Selecione um produto</option>
                         </select>
                         <span asp-validation-for="Itens[i].ProdutoId" class="text-danger"></span>
@@ -86,18 +103,65 @@
             }
 
             <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                <input type="submit" value="Criar Pedido" class="btn btn-primary" />
             </div>
         </form>
     </div>
 </div>
 
 <div class="mt-3">
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index">Voltar para a lista</a>
 </div>
 
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+
+    <script>
+        const produtos = @Html.Raw(produtosJson);
+        const periodoSelect = document.getElementById("Periodo");
+
+        function preencherSelectProduto(select, limparSelecao) {
+            const periodoSelecionado = String(periodoSelect.value);
+            const valorAtual = limparSelecao ? "" : (select.dataset.selected || select.value || "");
+
+            select.innerHTML = '<option value="">Selecione um produto</option>';
+
+            const filtrados = produtos.filter(p => String(p.periodo) === periodoSelecionado);
+
+            for (const produto of filtrados) {
+                const option = document.createElement("option");
+                option.value = produto.id;
+                option.textContent = produto.nome;
+                select.appendChild(option);
+            }
+
+            const existeValor = filtrados.some(p => String(p.id) === String(valorAtual));
+
+            if (existeValor) {
+                select.value = String(valorAtual);
+            } else {
+                select.value = "";
+            }
+
+            select.dataset.selected = "";
+        }
+
+        function preencherTodosOsProdutos(limparSelecao) {
+            const selects = document.querySelectorAll(".produto-select");
+
+            for (const select of selects) {
+                preencherSelectProduto(select, limparSelecao);
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            preencherTodosOsProdutos(false);
+
+            periodoSelect.addEventListener("change", function () {
+                preencherTodosOsProdutos(true);
+            });
+        });
+    </script>
 }

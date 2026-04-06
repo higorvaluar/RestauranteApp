@@ -322,7 +322,10 @@ namespace RestauranteApp.Controllers
 
         private void CarregarCombos(int clienteId)
         {
-            ViewBag.Produtos = new SelectList(_context.Produtos.OrderBy(p => p.Nome), "Id", "Nome");
+            ViewBag.Produtos = _context.Produtos
+                .AsNoTracking()
+                .OrderBy(p => p.Nome)
+                .ToList();
 
             var enderecos = _context.Enderecos
                 .Where(e => e.ClienteId == clienteId)
