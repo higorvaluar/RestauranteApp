@@ -1,21 +1,38 @@
-document.getElementById("cadastroForm").addEventListener("submit", async (e) => {
+﻿const usuarioAtualCadastro = getCurrentUser();
+if (usuarioAtualCadastro) {
+    window.location.href = "pedidos.html";
+}
+
+document.getElementById("cadastroForm").addEventListener("submit", (e) => {
     e.preventDefault();
 
-    const data = {
-        nome: document.getElementById("nome").value,
-        email: document.getElementById("email").value,
-        senha: document.getElementById("senha").value,
-        telefone: document.getElementById("telefone").value
-    };
+    const nome = document.getElementById("nome").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const senha = document.getElementById("senha").value;
+    const confirmarSenha = document.getElementById("confirmarSenha").value;
+    const telefone = document.getElementById("telefone").value.trim();
 
-    try {
-        await postData("/Auth/Register", data);
-
-        alert("Cadastro realizado com sucesso!");
-
-        window.location.href = "login.html";
-
-    } catch (error) {
-        alert("Erro ao cadastrar!");
+    if (senha !== confirmarSenha) {
+        alert("As senhas não coincidem.");
+        return;
     }
+
+    const contas = JSON.parse(localStorage.getItem("restaurante_usuarios") || "[]");
+    const emailJaCadastrado = contas.some(u => u.email.toLowerCase() === email.toLowerCase());
+
+    if (emailJaCadastrado) {
+        alert("Este e-mail já está cadastrado. Faça login ou use outro e-mail.");
+        return;
+    }
+
+    contas.push({
+        nome,
+        email,
+        senha,
+        telefone
+    });
+
+    localStorage.setItem("restaurante_usuarios", JSON.stringify(contas));
+    alert("Cadastro realizado com sucesso!");
+    window.location.href = "login.html";
 });

@@ -1,12 +1,29 @@
-document.getElementById("loginForm").addEventListener("submit", async (e) => {
+﻿clearCurrentUser();
+
+const usuarioAtual = getCurrentUser();
+if (usuarioAtual) {
+    window.location.href = "pedidos.html";
+}
+
+document.getElementById("loginForm").addEventListener("submit", (e) => {
     e.preventDefault();
 
-    const data = {
-        email: document.getElementById("email").value,
-        senha: document.getElementById("senha").value
-    };
+    const email = document.getElementById("email").value.trim();
+    const senha = document.getElementById("senha").value;
+    const contas = JSON.parse(localStorage.getItem("restaurante_usuarios") || "[]");
 
-    await postData("/Auth/Login", data);
+    const usuario = contas.find(u => u.email.toLowerCase() === email.toLowerCase() && u.senha === senha);
 
-    window.location.href = "index.html";
+    if (!usuario) {
+        alert("E-mail ou senha inválidos. Cadastre-se se ainda não tem conta.");
+        return;
+    }
+
+    setCurrentUser({
+        nome: usuario.nome,
+        email: usuario.email,
+        telefone: usuario.telefone
+    });
+
+    window.location.href = "pedidos.html";
 });
