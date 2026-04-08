@@ -73,7 +73,7 @@ namespace RestauranteApp.Controllers
 
             var sugestoes = await _context.SugestoesChefe.ToListAsync();
 
-            vm.ItensMaisVendidos = itens
+            var itensAgrupados = itens
                 .Select(i => new
                 {
                     i.NomeProduto,
@@ -84,14 +84,32 @@ namespace RestauranteApp.Controllers
                         s.Periodo == i.PeriodoPedido)
                 })
                 .GroupBy(x => new { x.NomeProduto, x.ComSugestao })
-                .Select(g => new ItemMaisVendidoViewModel
+                .Select(g => new
                 {
-                    NomeProduto = g.Key.NomeProduto,
-                    ComSugestaoChefe = g.Key.ComSugestao,
+                    g.Key.NomeProduto,
+                    g.Key.ComSugestao,
                     QuantidadeVendida = g.Sum(x => x.Quantidade)
                 })
                 .OrderByDescending(x => x.QuantidadeVendida)
                 .ThenBy(x => x.NomeProduto)
+                .ToList();
+
+            vm.ItensMaisVendidosComSugestao = itensAgrupados
+                .Where(x => x.ComSugestao)
+                .Select(x => new ItemMaisVendidoViewModel
+                {
+                    NomeProduto = x.NomeProduto,
+                    QuantidadeVendida = x.QuantidadeVendida
+                })
+                .ToList();
+
+            vm.ItensMaisVendidosSemSugestao = itensAgrupados
+                .Where(x => !x.ComSugestao)
+                .Select(x => new ItemMaisVendidoViewModel
+                {
+                    NomeProduto = x.NomeProduto,
+                    QuantidadeVendida = x.QuantidadeVendida
+                })
                 .ToList();
 
             return View(vm);

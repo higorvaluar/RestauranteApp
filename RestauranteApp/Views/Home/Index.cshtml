@@ -16,13 +16,17 @@
 
             @if (Model.SugestaoAlmoco?.Produto != null)
             {
-                <p><strong>Prato:</strong> @Model.SugestaoAlmoco.Produto.Nome</p>
-                <p><strong>Descrição:</strong> @Model.SugestaoAlmoco.Produto.Descricao</p>
-                <p><strong>Preço base:</strong> R$ @Model.SugestaoAlmoco.Produto.Preco.ToString("F2")</p>
-                <p><strong>Desconto:</strong> @Model.SugestaoAlmoco.PercentualDesconto.ToString("F0")%</p>
+                var ingredientesAlmoco = Model.SugestaoAlmoco.Produto.Ingredientes != null && Model.SugestaoAlmoco.Produto.Ingredientes.Any()
+                    ? string.Join(", ", Model.SugestaoAlmoco.Produto.Ingredientes.Select(i => i.Nome))
+                    : "Não informado";
 
                 var precoFinalAlmoco = Model.SugestaoAlmoco.Produto.Preco * (1 - (Model.SugestaoAlmoco.PercentualDesconto / 100));
 
+                <p><strong>Prato:</strong> @Model.SugestaoAlmoco.Produto.Nome</p>
+                <p><strong>Descrição:</strong> @Model.SugestaoAlmoco.Produto.Descricao</p>
+                <p><strong>Ingredientes:</strong> @ingredientesAlmoco</p>
+                <p><strong>Preço base:</strong> R$ @Model.SugestaoAlmoco.Produto.Preco.ToString("F2")</p>
+                <p><strong>Desconto:</strong> @Model.SugestaoAlmoco.PercentualDesconto.ToString("F0")%</p>
                 <p><strong>Preço com desconto:</strong> R$ @precoFinalAlmoco.ToString("F2")</p>
             }
             else
@@ -38,13 +42,17 @@
 
             @if (Model.SugestaoJantar?.Produto != null)
             {
-                <p><strong>Prato:</strong> @Model.SugestaoJantar.Produto.Nome</p>
-                <p><strong>Descrição:</strong> @Model.SugestaoJantar.Produto.Descricao</p>
-                <p><strong>Preço base:</strong> R$ @Model.SugestaoJantar.Produto.Preco.ToString("F2")</p>
-                <p><strong>Desconto:</strong> @Model.SugestaoJantar.PercentualDesconto.ToString("F0")%</p>
+                var ingredientesJantar = Model.SugestaoJantar.Produto.Ingredientes != null && Model.SugestaoJantar.Produto.Ingredientes.Any()
+                    ? string.Join(", ", Model.SugestaoJantar.Produto.Ingredientes.Select(i => i.Nome))
+                    : "Não informado";
 
                 var precoFinalJantar = Model.SugestaoJantar.Produto.Preco * (1 - (Model.SugestaoJantar.PercentualDesconto / 100));
 
+                <p><strong>Prato:</strong> @Model.SugestaoJantar.Produto.Nome</p>
+                <p><strong>Descrição:</strong> @Model.SugestaoJantar.Produto.Descricao</p>
+                <p><strong>Ingredientes:</strong> @ingredientesJantar</p>
+                <p><strong>Preço base:</strong> R$ @Model.SugestaoJantar.Produto.Preco.ToString("F2")</p>
+                <p><strong>Desconto:</strong> @Model.SugestaoJantar.PercentualDesconto.ToString("F0")%</p>
                 <p><strong>Preço com desconto:</strong> R$ @precoFinalJantar.ToString("F2")</p>
             }
             else
@@ -68,15 +76,21 @@
                     <tr>
                         <th>Prato</th>
                         <th>Descrição</th>
+                        <th>Ingredientes</th>
                         <th>Preço</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach (var produto in Model.ProdutosAlmoco)
                     {
+                        var ingredientes = produto.Ingredientes != null && produto.Ingredientes.Any()
+                            ? string.Join(", ", produto.Ingredientes.Select(i => i.Nome))
+                            : "Não informado";
+
                         <tr>
                             <td>@produto.Nome</td>
                             <td>@produto.Descricao</td>
+                            <td>@ingredientes</td>
                             <td>R$ @produto.Preco.ToString("F2")</td>
                         </tr>
                     }
@@ -99,15 +113,21 @@
                     <tr>
                         <th>Prato</th>
                         <th>Descrição</th>
+                        <th>Ingredientes</th>
                         <th>Preço</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach (var produto in Model.ProdutosJantar)
                     {
+                        var ingredientes = produto.Ingredientes != null && produto.Ingredientes.Any()
+                            ? string.Join(", ", produto.Ingredientes.Select(i => i.Nome))
+                            : "Não informado";
+
                         <tr>
                             <td>@produto.Nome</td>
                             <td>@produto.Descricao</td>
+                            <td>@ingredientes</td>
                             <td>R$ @produto.Preco.ToString("F2")</td>
                         </tr>
                     }

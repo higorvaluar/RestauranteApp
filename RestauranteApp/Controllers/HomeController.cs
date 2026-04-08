@@ -24,12 +24,14 @@ namespace RestauranteApp.Controllers
             {
                 ProdutosAlmoco = await _context.Produtos
                     .AsNoTracking()
+                    .Include(p => p.Ingredientes)
                     .Where(p => p.Periodo == PeriodoEnum.Almoco)
                     .OrderBy(p => p.Nome)
                     .ToListAsync(),
 
                 ProdutosJantar = await _context.Produtos
                     .AsNoTracking()
+                    .Include(p => p.Ingredientes)
                     .Where(p => p.Periodo == PeriodoEnum.Jantar)
                     .OrderBy(p => p.Nome)
                     .ToListAsync(),
@@ -37,6 +39,7 @@ namespace RestauranteApp.Controllers
                 SugestaoAlmoco = await _context.SugestoesChefe
                     .AsNoTracking()
                     .Include(s => s.Produto)
+                        .ThenInclude(p => p!.Ingredientes)
                     .FirstOrDefaultAsync(s =>
                         s.Data.Date == hoje &&
                         s.Periodo == PeriodoEnum.Almoco),
@@ -44,6 +47,7 @@ namespace RestauranteApp.Controllers
                 SugestaoJantar = await _context.SugestoesChefe
                     .AsNoTracking()
                     .Include(s => s.Produto)
+                        .ThenInclude(p => p!.Ingredientes)
                     .FirstOrDefaultAsync(s =>
                         s.Data.Date == hoje &&
                         s.Periodo == PeriodoEnum.Jantar)

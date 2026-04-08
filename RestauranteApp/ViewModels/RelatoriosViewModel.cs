@@ -10,7 +10,6 @@
     {
         public string NomeProduto { get; set; } = string.Empty;
         public int QuantidadeVendida { get; set; }
-        public bool ComSugestaoChefe { get; set; }
     }
 
     public class RelatoriosViewModel
@@ -19,6 +18,7 @@
         public DateTime DataFinal { get; set; } = DateTime.Today;
 
         public List<FaturamentoPorTipoViewModel> FaturamentoPorTipo { get; set; } = new();
-        public List<ItemMaisVendidoViewModel> ItensMaisVendidos { get; set; } = new();
+        public List<ItemMaisVendidoViewModel> ItensMaisVendidosComSugestao { get; set; } = new();
+        public List<ItemMaisVendidoViewModel> ItensMaisVendidosSemSugestao { get; set; } = new();
     }
 }

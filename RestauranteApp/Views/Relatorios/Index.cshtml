@@ -11,13 +11,13 @@
 
     <div class="row">
         <div class="col-md-3 mb-3">
-            <label asp-for="DataInicial" class="form-label"></label>
+            <label asp-for="DataInicial" class="form-label">Data Inicial</label>
             <input asp-for="DataInicial" class="form-control" type="date" />
             <span asp-validation-for="DataInicial" class="text-danger"></span>
         </div>
 
         <div class="col-md-3 mb-3">
-            <label asp-for="DataFinal" class="form-label"></label>
+            <label asp-for="DataFinal" class="form-label">Data Final</label>
             <input asp-for="DataFinal" class="form-control" type="date" />
             <span asp-validation-for="DataFinal" class="text-danger"></span>
         </div>
@@ -59,25 +59,23 @@ else
 
 <hr />
 
-<h3>Itens Mais Vendidos</h3>
+<h3>Itens Mais Vendidos com Sugestão do Chefe</h3>
 
-@if (Model.ItensMaisVendidos.Any())
+@if (Model.ItensMaisVendidosComSugestao.Any())
 {
     <table class="table table-bordered">
         <thead>
             <tr>
                 <th>Produto</th>
                 <th>Quantidade Vendida</th>
-                <th>Sugestão do Chefe</th>
             </tr>
         </thead>
         <tbody>
-            @foreach (var item in Model.ItensMaisVendidos)
+            @foreach (var item in Model.ItensMaisVendidosComSugestao)
             {
                 <tr>
                     <td>@item.NomeProduto</td>
                     <td>@item.QuantidadeVendida</td>
-                    <td>@(item.ComSugestaoChefe ? "Com Sugestão" : "Sem Sugestão")</td>
                 </tr>
             }
         </tbody>
@@ -85,7 +83,36 @@ else
 }
 else
 {
-    <p>Nenhum dado encontrado para o período informado.</p>
+    <p>Nenhum item vendido com Sugestão do Chefe no período informado.</p>
+}
+
+<hr />
+
+<h3>Itens Mais Vendidos sem Sugestão do Chefe</h3>
+
+@if (Model.ItensMaisVendidosSemSugestao.Any())
+{
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Produto</th>
+                <th>Quantidade Vendida</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.ItensMaisVendidosSemSugestao)
+            {
+                <tr>
+                    <td>@item.NomeProduto</td>
+                    <td>@item.QuantidadeVendida</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>Nenhum item vendido sem Sugestão do Chefe no período informado.</p>
 }
 
 @section Scripts {
