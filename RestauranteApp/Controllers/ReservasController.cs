@@ -50,6 +50,12 @@ namespace RestauranteApp.Controllers
         public IActionResult Create()
         {
             var clienteId = HttpContext.Session.GetInt32("ClienteId");
+
+            if (clienteId == null)
+            {
+                return RedirectToAction("Login", "Auth");
+            }
+
             if (UsuarioAdmin())
             {
                 return RedirectToAction(nameof(Index));
@@ -74,6 +80,12 @@ namespace RestauranteApp.Controllers
         public async Task<IActionResult> Create([Bind("Id,DataReserva,QuantidadePessoas,ClienteId,MesaId")] Reserva reserva)
         {
             var clienteId = HttpContext.Session.GetInt32("ClienteId");
+
+            if (clienteId == null)
+            {
+                return RedirectToAction("Login", "Auth");
+            }
+
             if (UsuarioAdmin())
             {
                 return RedirectToAction(nameof(Index));
