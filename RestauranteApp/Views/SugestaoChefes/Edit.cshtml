@@ -12,65 +12,89 @@
         {
             id = p.Id,
             nome = p.Nome,
-            periodo = (int)p.Periodo
+            periodo = (int)p.Periodo,
+            preco = p.Preco.ToString("F2")
         })
     );
 
     var produtoSelecionado = Model.ProdutoId == 0 ? "" : Model.ProdutoId.ToString();
 }
 
-<h1>Editar Sugestão do Chefe</h1>
+<div class="container py-4">
+    <div class="section-header mb-4">
+        <div>
+            <h1 class="section-title">Editar Sugestão do Chefe</h1>
+            <p class="mb-0 text-muted">Atualize a sugestão selecionada.</p>
+        </div>
 
-<h4>Sugestão do Chefe</h4>
-<hr />
-
-<div class="row">
-    <div class="col-md-4">
-        <form asp-controller="SugestaoChefes" asp-action="Edit" method="post">
-            @Html.AntiForgeryToken()
-
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
-            <input type="hidden" asp-for="Id" />
-
-            <div class="form-group mb-3">
-                <label asp-for="Data" class="control-label"></label>
-                <input asp-for="Data" class="form-control" type="date" />
-                <span asp-validation-for="Data" class="text-danger"></span>
-            </div>
-
-            <div class="form-group mb-3">
-                <label asp-for="Periodo" class="control-label"></label>
-                <select asp-for="Periodo"
-                        id="Periodo"
-                        class="form-control"
-                        asp-items="Html.GetEnumSelectList<PeriodoEnum>()">
-                </select>
-                <span asp-validation-for="Periodo" class="text-danger"></span>
-            </div>
-
-            <div class="form-group mb-3">
-                <label asp-for="ProdutoId" class="control-label">Produto</label>
-                <select asp-for="ProdutoId" id="ProdutoId" class="form-control">
-                    <option value="">Selecione um produto</option>
-                </select>
-                <span asp-validation-for="ProdutoId" class="text-danger"></span>
-            </div>
-
-            <div class="form-group mb-3">
-                <label class="control-label">Desconto</label>
-                <input class="form-control" value="20%" readonly />
-            </div>
-
-            <div class="form-group">
-                <input type="submit" value="Salvar" class="btn btn-primary" />
-            </div>
-        </form>
+        <a asp-action="Index" class="btn btn-outline-danger">
+            Voltar
+        </a>
     </div>
-</div>
 
-<div class="mt-3">
-    <a asp-action="Index">Voltar para a lista</a>
+    <div class="row g-4">
+        <div class="col-lg-7">
+            <div class="card shadow-sm">
+                <div class="card-body p-4">
+                    <form asp-controller="SugestaoChefes" asp-action="Edit" method="post">
+                        @Html.AntiForgeryToken()
+
+                        <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+                        <input type="hidden" asp-for="Id" />
+
+                        <div class="mb-3">
+                            <label asp-for="Data" class="form-label">Data</label>
+                            <input asp-for="Data" class="form-control" type="date" />
+                            <span asp-validation-for="Data" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Periodo" class="form-label">Período</label>
+                            <select asp-for="Periodo"
+                                    id="Periodo"
+                                    class="form-select"
+                                    asp-items="Html.GetEnumSelectList<PeriodoEnum>()">
+                            </select>
+                            <span asp-validation-for="Periodo" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="ProdutoId" class="form-label">Produto</label>
+                            <select asp-for="ProdutoId" id="ProdutoId" class="form-select">
+                                <option value="">Selecione um produto</option>
+                            </select>
+                            <span asp-validation-for="ProdutoId" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label">Desconto</label>
+                            <input class="form-control" value="20%" readonly />
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100">
+                            Salvar Alterações
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-5">
+            <div class="card shadow-sm sticky-top" style="top: 90px;">
+                <div class="card-body">
+                    <h4 class="card-title">Regras</h4>
+
+                    <ul class="mb-0">
+                        <li>Apenas uma sugestão por dia e período.</li>
+                        <li>Produto de almoço só pode ser sugestão de almoço.</li>
+                        <li>Produto de jantar só pode ser sugestão de jantar.</li>
+                        <li>O desconto é fixo em 20%.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 @section Scripts {
@@ -95,7 +119,7 @@
             for (const produto of produtosFiltrados) {
                 const option = document.createElement("option");
                 option.value = produto.id;
-                option.textContent = produto.nome;
+                option.textContent = `${produto.nome} - R$ ${produto.preco}`;
                 produtoSelect.appendChild(option);
             }
 
@@ -106,12 +130,10 @@
             }
         }
 
-        document.addEventListener("DOMContentLoaded", function () {
-            preencherProdutos(false);
+        preencherProdutos(false);
 
-            periodoSelect.addEventListener("change", function () {
-                preencherProdutos(true);
-            });
+        periodoSelect.addEventListener("change", function () {
+            preencherProdutos(true);
         });
     </script>
 }
