@@ -2,118 +2,213 @@
 
 @{
     ViewData["Title"] = "Relatórios";
+
+    var totalGeral = Model.FaturamentoPorTipo.Sum(f => f.TotalFaturado);
+    var totalItensComSugestao = Model.ItensMaisVendidosComSugestao.Sum(i => i.QuantidadeVendida);
+    var totalItensSemSugestao = Model.ItensMaisVendidosSemSugestao.Sum(i => i.QuantidadeVendida);
 }
 
-<h1>Relatórios</h1>
-
-<form asp-action="Index" method="post" class="mb-4">
-    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
-    <div class="row">
-        <div class="col-md-3 mb-3">
-            <label asp-for="DataInicial" class="form-label">Data Inicial</label>
-            <input asp-for="DataInicial" class="form-control" type="date" />
-            <span asp-validation-for="DataInicial" class="text-danger"></span>
-        </div>
-
-        <div class="col-md-3 mb-3">
-            <label asp-for="DataFinal" class="form-label">Data Final</label>
-            <input asp-for="DataFinal" class="form-control" type="date" />
-            <span asp-validation-for="DataFinal" class="text-danger"></span>
-        </div>
-
-        <div class="col-md-3 mb-3 d-flex align-items-end">
-            <button type="submit" class="btn btn-primary">Gerar Relatórios</button>
+<div class="container py-4">
+    <div class="section-header mb-4">
+        <div>
+            <h1 class="section-title">Relatórios</h1>
+            <p class="mb-0 text-muted">
+                Consulte faturamento e itens mais vendidos por período.
+            </p>
         </div>
     </div>
-</form>
 
-<hr />
+    <div class="card shadow-sm mb-4">
+        <div class="card-body p-4">
+            <form asp-action="Index" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
-<h3>Faturamento por Tipo de Atendimento</h3>
+                <div class="row g-3 align-items-end">
+                    <div class="col-md-4">
+                        <label asp-for="DataInicial" class="form-label">Data Inicial</label>
+                        <input asp-for="DataInicial"
+                               class="form-control"
+                               type="date"
+                               asp-format="{0:yyyy-MM-dd}" />
+                        <span asp-validation-for="DataInicial" class="text-danger"></span>
+                    </div>
 
-@if (Model.FaturamentoPorTipo.Any())
-{
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th>Tipo de Atendimento</th>
-                <th>Total Faturado</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model.FaturamentoPorTipo)
-            {
-                <tr>
-                    <td>@item.TipoAtendimento</td>
-                    <td>@item.TotalFaturado.ToString("C")</td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
-else
-{
-    <p>Nenhum dado encontrado para o período informado.</p>
-}
+                    <div class="col-md-4">
+                        <label asp-for="DataFinal" class="form-label">Data Final</label>
+                        <input asp-for="DataFinal"
+                               class="form-control"
+                               type="date"
+                               asp-format="{0:yyyy-MM-dd}" />
+                        <span asp-validation-for="DataFinal" class="text-danger"></span>
+                    </div>
 
-<hr />
+                    <div class="col-md-4">
+                        <button type="submit" class="btn btn-primary w-100">
+                            Gerar Relatórios
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
 
-<h3>Itens Mais Vendidos com Sugestão do Chefe</h3>
+    <div class="row g-4 mb-4">
+        <div class="col-md-4">
+            <div class="card shadow-sm h-100 food-card">
+                <div class="card-body">
+                    <h5 class="card-title">Faturamento Total</h5>
+                    <p class="display-6 fw-bold mb-0">
+                        R$ @totalGeral.ToString("F2")
+                    </p>
+                    <p class="text-muted mb-0">
+                        No período selecionado
+                    </p>
+                </div>
+            </div>
+        </div>
 
-@if (Model.ItensMaisVendidosComSugestao.Any())
-{
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th>Produto</th>
-                <th>Quantidade Vendida</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model.ItensMaisVendidosComSugestao)
-            {
-                <tr>
-                    <td>@item.NomeProduto</td>
-                    <td>@item.QuantidadeVendida</td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
-else
-{
-    <p>Nenhum item vendido com Sugestão do Chefe no período informado.</p>
-}
+        <div class="col-md-4">
+            <div class="card shadow-sm h-100 food-card">
+                <div class="card-body">
+                    <h5 class="card-title">Itens com Sugestão</h5>
+                    <p class="display-6 fw-bold mb-0">
+                        @totalItensComSugestao
+                    </p>
+                    <p class="text-muted mb-0">
+                        Unidades vendidas
+                    </p>
+                </div>
+            </div>
+        </div>
 
-<hr />
+        <div class="col-md-4">
+            <div class="card shadow-sm h-100 food-card">
+                <div class="card-body">
+                    <h5 class="card-title">Itens sem Sugestão</h5>
+                    <p class="display-6 fw-bold mb-0">
+                        @totalItensSemSugestao
+                    </p>
+                    <p class="text-muted mb-0">
+                        Unidades vendidas
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
 
-<h3>Itens Mais Vendidos sem Sugestão do Chefe</h3>
+    <div class="row g-4">
+        <div class="col-lg-12">
+            <div class="card shadow-sm">
+                <div class="card-body p-4">
+                    <h3 class="mb-3">Faturamento por Tipo de Atendimento</h3>
 
-@if (Model.ItensMaisVendidosSemSugestao.Any())
-{
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th>Produto</th>
-                <th>Quantidade Vendida</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model.ItensMaisVendidosSemSugestao)
-            {
-                <tr>
-                    <td>@item.NomeProduto</td>
-                    <td>@item.QuantidadeVendida</td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
-else
-{
-    <p>Nenhum item vendido sem Sugestão do Chefe no período informado.</p>
-}
+                    @if (Model.FaturamentoPorTipo.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle">
+                                <thead>
+                                    <tr>
+                                        <th>Tipo de Atendimento</th>
+                                        <th>Total Faturado</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model.FaturamentoPorTipo)
+                                    {
+                                        <tr>
+                                            <td>@item.TipoAtendimento</td>
+                                            <td class="fw-bold">R$ @item.TotalFaturado.ToString("F2")</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted mb-0">
+                            Nenhum dado de faturamento encontrado para o período informado.
+                        </p>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-body p-4">
+                    <h3 class="mb-3">Itens Mais Vendidos com Sugestão do Chefe</h3>
+
+                    @if (Model.ItensMaisVendidosComSugestao.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle">
+                                <thead>
+                                    <tr>
+                                        <th>Produto</th>
+                                        <th>Quantidade</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model.ItensMaisVendidosComSugestao)
+                                    {
+                                        <tr>
+                                            <td>@item.NomeProduto</td>
+                                            <td class="fw-bold">@item.QuantidadeVendida</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted mb-0">
+                            Nenhum item vendido com Sugestão do Chefe no período informado.
+                        </p>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-body p-4">
+                    <h3 class="mb-3">Itens Mais Vendidos sem Sugestão do Chefe</h3>
+
+                    @if (Model.ItensMaisVendidosSemSugestao.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle">
+                                <thead>
+                                    <tr>
+                                        <th>Produto</th>
+                                        <th>Quantidade</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model.ItensMaisVendidosSemSugestao)
+                                    {
+                                        <tr>
+                                            <td>@item.NomeProduto</td>
+                                            <td class="fw-bold">@item.QuantidadeVendida</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted mb-0">
+                            Nenhum item vendido sem Sugestão do Chefe no período informado.
+                        </p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 @section Scripts {
     @{
