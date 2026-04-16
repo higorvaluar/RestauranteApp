@@ -200,3 +200,12 @@ a:hover {
   margin: 0;
   color: #c1121f;
 }
+
+/* FOOTER */
+.site-footer {
+    margin-top: 50px;
+    padding: 20px 0;
+    background-color: #ffffff;
+    border-top: 1px solid #e5e5e5;
+    color: #6c757d;
+}
