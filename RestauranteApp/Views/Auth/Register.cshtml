@@ -4,47 +4,43 @@
     ViewData["Title"] = "Cadastro";
 }
 
-<h1>Cadastro</h1>
+<div class="login-body">
+    <div class="login-container">
+        <div class="login-card shadow">
 
-<div class="row">
-    <div class="col-md-6">
-        <form asp-action="Register" method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="text-center mb-3">
+                <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary">← Voltar ao Início</a>
+            </div>
 
-            <div class="form-group mb-3">
-                <label asp-for="Nome" class="control-label"></label>
-                <input asp-for="Nome" class="form-control" />
+            <h2 class="text-center mb-3">🍽 Restaurante</h2>
+            <p class="text-center text-muted mb-4">Crie sua conta</p>
+
+            <form asp-action="Register" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                <input asp-for="Nome" class="form-control mb-3" placeholder="Nome completo" />
                 <span asp-validation-for="Nome" class="text-danger"></span>
-            </div>
 
-            <div class="form-group mb-3">
-                <label asp-for="Email" class="control-label"></label>
-                <input asp-for="Email" class="form-control" />
+                <input asp-for="Email" class="form-control mb-3" placeholder="Email" />
                 <span asp-validation-for="Email" class="text-danger"></span>
-            </div>
 
-            <div class="form-group mb-3">
-                <label asp-for="Senha" class="control-label"></label>
-                <input asp-for="Senha" class="form-control" type="password" />
+                <input asp-for="Senha" class="form-control mb-3" type="password" placeholder="Senha" />
                 <span asp-validation-for="Senha" class="text-danger"></span>
-            </div>
 
-            <div class="form-group mb-3">
-                <label asp-for="ConfirmarSenha" class="control-label"></label>
-                <input asp-for="ConfirmarSenha" class="form-control" type="password" />
+                <input asp-for="ConfirmarSenha" class="form-control mb-3" type="password" placeholder="Confirmar senha" />
                 <span asp-validation-for="ConfirmarSenha" class="text-danger"></span>
-            </div>
 
-            <div class="form-group mb-3">
-                <label asp-for="Telefone" class="control-label"></label>
-                <input asp-for="Telefone" class="form-control" />
+                <input asp-for="Telefone" class="form-control mb-3" placeholder="Telefone" />
                 <span asp-validation-for="Telefone" class="text-danger"></span>
+
+                <button type="submit" class="btn btn-primary w-100">Cadastrar</button>
+            </form>
+
+            <div class="text-center mt-3">
+                <small>Já tem conta? <a asp-controller="Auth" asp-action="Login">Entrar</a></small>
             </div>
 
-            <div class="form-group">
-                <input type="submit" value="Cadastrar" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
     </div>
 </div>
 
