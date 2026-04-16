@@ -1,55 +1,82 @@
 ﻿@model RestauranteApp.Models.Reserva
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Nova Reserva";
 }
 
-<h1>Create</h1>
+<div class="container py-4">
+    <div class="section-header mb-4">
+        <div>
+            <h1 class="section-title">Nova Reserva</h1>
+            <p class="mb-0 text-muted">Reserve uma mesa para o almoço.</p>
+        </div>
 
-<h4>Reserva</h4>
-<hr />
-<div class="row">
-    <div class="col-md-6">
-        <form asp-action="Create">
-            <div asp-validation-summary="All" class="text-danger"></div>
-
-            <input asp-for="ClienteId" type="hidden" />
-
-            <div class="form-group mb-3">
-                <label class="control-label">Cliente</label>
-                <input class="form-control" value="@ViewBag.ClienteNome" readonly />
-            </div>
-
-            <div class="form-group mb-3">
-                <label asp-for="DataReserva" class="control-label"></label>
-                <input asp-for="DataReserva"
-                       asp-format="{0:yyyy-MM-ddTHH:mm}"
-                       class="form-control"
-                       type="datetime-local" />
-                <span asp-validation-for="DataReserva" class="text-danger"></span>
-            </div>
-
-            <div class="form-group mb-3">
-                <label asp-for="QuantidadePessoas" class="control-label"></label>
-                <input asp-for="QuantidadePessoas" class="form-control" />
-                <span asp-validation-for="QuantidadePessoas" class="text-danger"></span>
-            </div>
-
-            <div class="form-group mb-3">
-                <label asp-for="MesaId" class="control-label"></label>
-                <select asp-for="MesaId" class="form-control" asp-items="ViewBag.MesaId"></select>
-                <span asp-validation-for="MesaId" class="text-danger"></span>
-            </div>
-
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+        <a asp-action="Index" class="btn btn-outline-danger">
+            Voltar
+        </a>
     </div>
-</div>
 
-<div class="mt-3">
-    <a asp-action="Index">Back to List</a>
+    <div class="row g-4">
+        <div class="col-lg-7">
+            <div class="card shadow-sm">
+                <div class="card-body p-4">
+                    <form asp-action="Create" method="post">
+                        <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+                        <input asp-for="ClienteId" type="hidden" />
+
+                        <div class="mb-3">
+                            <label class="form-label">Cliente</label>
+                            <input class="form-control" value="@ViewBag.ClienteNome" readonly />
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="DataReserva" class="form-label">Data e horário da reserva</label>
+                            <input asp-for="DataReserva"
+                                   asp-format="{0:yyyy-MM-ddTHH:mm}"
+                                   class="form-control"
+                                   type="datetime-local" />
+                            <span asp-validation-for="DataReserva" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="QuantidadePessoas" class="form-label">Quantidade de pessoas</label>
+                            <input asp-for="QuantidadePessoas" class="form-control" min="1" />
+                            <span asp-validation-for="QuantidadePessoas" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="MesaId" class="form-label">Mesa</label>
+                            <select asp-for="MesaId" class="form-select" asp-items="ViewBag.MesaId">
+                                <option value="">Selecione uma mesa</option>
+                            </select>
+                            <span asp-validation-for="MesaId" class="text-danger"></span>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100">
+                            Confirmar Reserva
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-5">
+            <div class="card shadow-sm sticky-top" style="top: 90px;">
+                <div class="card-body">
+                    <h4 class="card-title">Regras da Reserva</h4>
+
+                    <ul class="mb-0">
+                        <li>A reserva é apenas para o almoço.</li>
+                        <li>Horário permitido: 11h às 14h.</li>
+                        <li>Precisa ser feita com pelo menos 1 dia de antecedência.</li>
+                        <li>A quantidade de pessoas não pode exceder a capacidade da mesa.</li>
+                        <li>A mesma mesa não pode estar ocupada no mesmo horário.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 @section Scripts {

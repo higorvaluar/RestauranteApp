@@ -5,37 +5,93 @@
     var admin = Context.Session.GetInt32("Admin") == 1;
 }
 
-<h1>Reservas</h1>
+<div class="container py-4">
+    <div class="section-header mb-4">
+        <div>
+            <h1 class="section-title">Reservas</h1>
+            <p class="mb-0 text-muted">
+                @(admin ? "Acompanhe todas as reservas realizadas." : "Acompanhe suas reservas de almoço.")
+            </p>
+        </div>
 
-@if (!admin)
-{
-    <p>
-        <a asp-action="Create" class="btn btn-primary">Nova Reserva</a>
-    </p>
-}
-
-<table class="table table-bordered">
-    <thead>
-        <tr>
-            <th>Data da Reserva</th>
-            <th>Quantidade de Pessoas</th>
-            <th>Cliente</th>
-            <th>Mesa</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
+        @if (!admin)
         {
-            <tr>
-                <td>@item.DataReserva</td>
-                <td>@item.QuantidadePessoas</td>
-                <td>@item.Cliente.Nome</td>
-                <td>@item.Mesa.Numero</td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@item.Id">Editar</a>
-                </td>
-            </tr>
+            <a asp-action="Create" class="btn btn-primary">
+                Nova Reserva
+            </a>
         }
-    </tbody>
-</table>
+    </div>
+
+    <div class="alert alert-light border mb-4">
+        <strong>Regras da reserva:</strong>
+        reservas disponíveis apenas para o almoço, entre <strong>11h e 14h</strong>, com pelo menos
+        <strong>1 dia de antecedência</strong>.
+    </div>
+
+    @if (Model.Any())
+    {
+        <div class="row g-4">
+            @foreach (var item in Model)
+            {
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100 shadow-sm food-card">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h5 class="card-title mb-0">Reserva #@item.Id</h5>
+                                <span class="badge bg-danger">Almoço</span>
+                            </div>
+
+                            <p class="mb-1">
+                                <strong>Data:</strong> @item.DataReserva.ToString("dd/MM/yyyy")
+                            </p>
+
+                            <p class="mb-1">
+                                <strong>Horário:</strong> @item.DataReserva.ToString("HH:mm")
+                            </p>
+
+                            <p class="mb-1">
+                                <strong>Pessoas:</strong> @item.QuantidadePessoas
+                            </p>
+
+                            <p class="mb-1">
+                                <strong>Cliente:</strong> @item.Cliente.Nome
+                            </p>
+
+                            <p class="mb-3">
+                                <strong>Mesa:</strong> @item.Mesa.Numero
+                                <span class="text-muted">(capacidade: @item.Mesa.Capacidade)</span>
+                            </p>
+
+                            @if (!string.IsNullOrWhiteSpace(item.CodigoConfirmacao))
+                            {
+                                <p class="mb-3">
+                                    <strong>Código:</strong> @item.CodigoConfirmacao
+                                </p>
+                            }
+
+                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-outline-danger btn-sm">
+                                Editar
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="card shadow-sm">
+            <div class="card-body text-center py-5">
+                <h4>Nenhuma reserva encontrada</h4>
+                <p class="text-muted">Quando uma reserva for realizada, ela aparecerá aqui.</p>
+
+                @if (!admin)
+                {
+                    <a asp-action="Create" class="btn btn-primary">
+                        Fazer minha primeira reserva
+                    </a>
+                }
+            </div>
+        </div>
+    }
+</div>

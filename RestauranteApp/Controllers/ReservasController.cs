@@ -199,10 +199,19 @@ namespace RestauranteApp.Controllers
 
         private void CarregarCombos(int? mesaId = null)
         {
+            var mesas = _context.Mesas
+                .OrderBy(m => m.Numero)
+                .Select(m => new
+                {
+                    m.Id,
+                    Descricao = $"Mesa {m.Numero} - capacidade {m.Capacidade} pessoas"
+                })
+                .ToList();
+
             ViewData["MesaId"] = new SelectList(
-                _context.Mesas.OrderBy(m => m.Numero),
+                mesas,
                 "Id",
-                "Numero",
+                "Descricao",
                 mesaId);
         }
 
