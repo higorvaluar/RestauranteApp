@@ -17,9 +17,9 @@
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark border-bottom box-shadow mb-3">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">RestauranteApp</a>
+                <a class="navbar-brand text-white fw-bold" asp-area="" asp-controller="Home" asp-action="Index">RestauranteApp</a>
 
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse"
                         aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Alternar navegação">
@@ -29,64 +29,64 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link text-white" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
 
                         @if (clienteId == null)
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="Auth" asp-action="Login">Login</a>
+                                <a class="nav-link text-white" asp-controller="Auth" asp-action="Login">Login</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="Auth" asp-action="Register">Cadastro</a>
+                                <a class="nav-link text-white" asp-controller="Auth" asp-action="Register">Cadastro</a>
                             </li>
                         }
                         else if (admin)
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="SugestaoChefes" asp-action="Index">Sugestão do Chefe</a>
+                                <a class="nav-link text-white" asp-controller="SugestaoChefes" asp-action="Index">Sugestão do Chefe</a>
                             </li>
 
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="Pedidos" asp-action="Index">Pedidos</a>
+                                <a class="nav-link text-white" asp-controller="Pedidos" asp-action="Index">Pedidos</a>
                             </li>
 
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="Reservas" asp-action="Index">Reservas</a>
+                                <a class="nav-link text-white" asp-controller="Reservas" asp-action="Index">Reservas</a>
                             </li>
 
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="Relatorios" asp-action="Index">Relatórios</a>
+                                <a class="nav-link text-white" asp-controller="Relatorios" asp-action="Index">Relatórios</a>
                             </li>
 
                             <li class="nav-item">
-                                <span class="nav-link text-dark">Olá, @clienteNome (Admin)</span>
+                                <span class="nav-link text-white">Olá, @clienteNome (Admin)</span>
                             </li>
 
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="Auth" asp-action="Logout">Sair</a>
+                                <a class="nav-link text-white" asp-controller="Auth" asp-action="Logout">Sair</a>
                             </li>
                         }
                         else
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="Pedidos" asp-action="Index">Pedidos</a>
+                                <a class="nav-link text-white" asp-controller="Pedidos" asp-action="Index">Pedidos</a>
                             </li>
 
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="Enderecos" asp-action="Index">Endereços</a>
+                                <a class="nav-link text-white" asp-controller="Enderecos" asp-action="Index">Endereços</a>
                             </li>
 
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="Reservas" asp-action="Index">Reservas</a>
+                                <a class="nav-link text-white" asp-controller="Reservas" asp-action="Index">Reservas</a>
                             </li>
 
                             <li class="nav-item">
-                                <span class="nav-link text-dark">Olá, @clienteNome</span>
+                                <span class="nav-link text-white">Olá, @clienteNome</span>
                             </li>
 
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="Auth" asp-action="Logout">Sair</a>
+                                <a class="nav-link text-white" asp-controller="Auth" asp-action="Logout">Sair</a>
                             </li>
                         }
                     </ul>
