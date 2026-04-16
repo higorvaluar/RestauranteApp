@@ -33,7 +33,7 @@ namespace RestauranteApp.ViewModels
         public int? EnderecoId { get; set; }
 
         [Display(Name = "Aplicativo")]
-        public string NomeAplicativo { get; set; } = string.Empty;
+        public string? NomeAplicativo { get; set; }
 
         public List<PedidoCreateItemViewModel> Itens { get; set; } = new();
     }

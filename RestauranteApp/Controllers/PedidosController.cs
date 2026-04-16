@@ -208,7 +208,7 @@ namespace RestauranteApp.Controllers
                 "DeliveryAplicativo" => new AtendimentoDeliveryAplicativo
                 {
                     Tipo = "Delivery Aplicativo",
-                    NomeAplicativo = vm.NomeAplicativo
+                    NomeAplicativo = vm.NomeAplicativo!.Trim()
                 },
                 _ => null
             };

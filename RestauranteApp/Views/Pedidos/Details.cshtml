@@ -4,108 +4,126 @@
     ViewData["Title"] = "Detalhes do Pedido";
 }
 
-<h1>Detalhes</h1>
+<div class="container py-4">
+    <div class="section-header mb-4">
+        <div>
+            <h1 class="section-title">Pedido #@Model.Id</h1>
+            <p class="mb-0 text-muted">Detalhes do pedido realizado.</p>
+        </div>
 
-<div>
-    <h4>Pedido</h4>
-    <hr />
+        <a asp-action="Index" class="btn btn-outline-danger">
+            Voltar
+        </a>
+    </div>
 
-    <dl class="row">
-        <dt class="col-sm-3">Data do Pedido</dt>
-        <dd class="col-sm-9">@Model.DataPedido</dd>
+    <div class="row g-4">
+        <div class="col-lg-5">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h4 class="card-title mb-3">Informações</h4>
 
-        <dt class="col-sm-3">Cliente</dt>
-        <dd class="col-sm-9">@Model.Cliente.Nome</dd>
+                    <p><strong>Data:</strong> @Model.DataPedido.ToString("dd/MM/yyyy HH:mm")</p>
+                    <p><strong>Cliente:</strong> @Model.Cliente.Nome</p>
+                    <p><strong>Período:</strong> @Model.Periodo</p>
+                    <p><strong>Atendimento:</strong> @Model.Atendimento?.Tipo</p>
+                    <p><strong>Taxa / Comissão:</strong> R$ @Model.Atendimento?.TaxaEntrega.ToString("F2")</p>
 
-        <dt class="col-sm-3">Período</dt>
-        <dd class="col-sm-9">@Model.Periodo</dd>
+                    @if (Model.Atendimento is RestauranteApp.Models.AtendimentoDeliveryProprio deliveryProprio)
+                    {
+                        <p><strong>Endereço de Entrega:</strong> @deliveryProprio.EnderecoEntrega</p>
+                    }
 
-        <dt class="col-sm-3">Tipo de Atendimento</dt>
-        <dd class="col-sm-9">@Model.Atendimento?.Tipo</dd>
+                    @if (Model.Atendimento is RestauranteApp.Models.AtendimentoDeliveryAplicativo deliveryApp)
+                    {
+                        <p><strong>Aplicativo:</strong> @deliveryApp.NomeAplicativo</p>
+                        <p><strong>Comissão:</strong> R$ @deliveryApp.Comissao.ToString("F2")</p>
+                    }
 
-        <dt class="col-sm-3">Taxa / Comissão</dt>
-        <dd class="col-sm-9">R$ @Model.Atendimento?.TaxaEntrega.ToString("F2")</dd>
+                    <hr />
 
-        @if (Model.Atendimento is RestauranteApp.Models.AtendimentoDeliveryProprio deliveryProprio)
-        {
-            <dt class="col-sm-3">Endereço de Entrega</dt>
-            <dd class="col-sm-9">@deliveryProprio.EnderecoEntrega</dd>
-        }
+                    <p class="fs-4 fw-bold mb-0">
+                        Total Final: R$ @Model.Total.ToString("F2")
+                    </p>
+                </div>
+            </div>
+        </div>
 
-        @if (Model.Atendimento is RestauranteApp.Models.AtendimentoDeliveryAplicativo deliveryApp)
-        {
-            <dt class="col-sm-3">Aplicativo</dt>
-            <dd class="col-sm-9">@deliveryApp.NomeAplicativo</dd>
+        <div class="col-lg-7">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h4 class="card-title mb-3">Itens do Pedido</h4>
 
-            <dt class="col-sm-3">Comissão</dt>
-            <dd class="col-sm-9">R$ @deliveryApp.Comissao.ToString("F2")</dd>
-        }
+                    @if (Model.PedidoItens != null && Model.PedidoItens.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table align-middle">
+                                <thead>
+                                    <tr>
+                                        <th>Produto</th>
+                                        <th>Qtd.</th>
+                                        <th>Preço</th>
+                                        <th>Subtotal</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model.PedidoItens)
+                                    {
+                                        var precoBaseTotal = item.PrecoUnitario * item.Quantidade;
+                                        var temDesconto = item.Subtotal < precoBaseTotal;
+                                        var precoComDescontoUnitario = item.Quantidade > 0
+                                            ? item.Subtotal / item.Quantidade
+                                            : item.PrecoUnitario;
 
-        <dt class="col-sm-3">Total Final</dt>
-        <dd class="col-sm-9"><strong>R$ @Model.Total.ToString("F2")</strong></dd>
-    </dl>
-</div>
+                                        <tr>
+                                            <td>
+                                                <strong>@item.Produto.Nome</strong>
 
-<hr />
+                                                @if (temDesconto)
+                                                {
+                                                    <div class="text-success small">
+                                                        Sugestão do Chefe (-20%)
+                                                    </div>
+                                                }
+                                            </td>
 
-<h4>Itens do Pedido</h4>
+                                            <td>@item.Quantidade</td>
 
-@if (Model.PedidoItens != null && Model.PedidoItens.Any())
-{
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Produto</th>
-                <th>Quantidade</th>
-                <th>Preço</th>
-                <th>Subtotal</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model.PedidoItens)
-            {
-                var precoBaseTotal = item.PrecoUnitario * item.Quantidade;
-                var temDesconto = item.Subtotal < precoBaseTotal;
-                var precoComDescontoUnitario = item.Quantidade > 0
-                    ? item.Subtotal / item.Quantidade
-                    : item.PrecoUnitario;
+                                            <td>
+                                                @if (temDesconto)
+                                                {
+                                                    <span class="text-muted text-decoration-line-through">
+                                                        R$ @item.PrecoUnitario.ToString("F2")
+                                                    </span>
+                                                    <br />
+                                                    <span>
+                                                        R$ @precoComDescontoUnitario.ToString("F2")
+                                                    </span>
+                                                }
+                                                else
+                                                {
+                                                    <span>R$ @item.PrecoUnitario.ToString("F2")</span>
+                                                }
+                                            </td>
 
-                <tr>
-                    <td>
-                        @item.Produto.Nome
-                        @if (temDesconto)
-                        {
-                            <div class="text-success"><strong>Sugestão do Chefe (-20%)</strong></div>
-                        }
-                    </td>
-                    <td>@item.Quantidade</td>
-                    <td>
-                        @if (temDesconto)
-                        {
-                            <span>Base: R$ @item.PrecoUnitario.ToString("F2")</span>
-                            <br />
-                            <span>Com desconto: R$ @precoComDescontoUnitario.ToString("F2")</span>
-                        }
-                        else
-                        {
-                            <span>R$ @item.PrecoUnitario.ToString("F2")</span>
-                        }
-                    </td>
-                    <td>R$ @item.Subtotal.ToString("F2")</td>
-                </tr>
-            }
-        </tbody>
-    </table>
+                                            <td>R$ @item.Subtotal.ToString("F2")</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
 
-    <p><strong>Soma dos Itens:</strong> R$ @Model.PedidoItens.Sum(i => i.Subtotal).ToString("F2")</p>
-    <p><strong>Taxa / Comissão:</strong> R$ @Model.Atendimento?.TaxaEntrega.ToString("F2")</p>
-    <p><strong>Total Final:</strong> R$ @Model.Total.ToString("F2")</p>
-}
-else
-{
-    <p>Nenhum item encontrado para este pedido.</p>
-}
+                        <hr />
 
-<div>
-    <a asp-action="Index">Voltar para a lista</a>
+                        <p><strong>Soma dos Itens:</strong> R$ @Model.PedidoItens.Sum(i => i.Subtotal).ToString("F2")</p>
+                        <p><strong>Taxa / Comissão:</strong> R$ @Model.Atendimento?.TaxaEntrega.ToString("F2")</p>
+                        <p class="fs-5 fw-bold"><strong>Total Final:</strong> R$ @Model.Total.ToString("F2")</p>
+                    }
+                    else
+                    {
+                        <p>Nenhum item encontrado para este pedido.</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

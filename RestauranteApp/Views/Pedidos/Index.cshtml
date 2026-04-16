@@ -5,82 +5,112 @@
     var admin = Context.Session.GetInt32("Admin") == 1;
 }
 
-<h1>Pedidos</h1>
+<div class="container py-4">
+    <div class="section-header mb-4">
+        <div>
+            <h1 class="section-title">Pedidos</h1>
+            <p class="mb-0 text-muted">
+                @(admin ? "Acompanhe todos os pedidos realizados." : "Acompanhe seus pedidos realizados.")
+            </p>
+        </div>
 
-@if (!admin)
-{
-    <p>
-        <a asp-action="Create" class="btn btn-primary">Novo Pedido</a>
-    </p>
-}
-
-<table class="table table-bordered">
-    <thead>
-        <tr>
-            <th>Data do Pedido</th>
-            <th>Cliente</th>
-            <th>Período</th>
-            <th>Atendimento</th>
-            <th>Pratos</th>
-            <th>Total</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
+        @if (!admin)
         {
-            <tr>
-                <td>@item.DataPedido</td>
-                <td>@item.Cliente.Nome</td>
-                <td>@item.Periodo</td>
-                <td>@item.Atendimento?.Tipo</td>
-                <td>
-                    @if (item.PedidoItens != null && item.PedidoItens.Any())
-                    {
-                        <ul class="mb-0 ps-3">
-                            @foreach (var pedidoItem in item.PedidoItens)
-                            {
-                                var precoBaseTotal = pedidoItem.PrecoUnitario * pedidoItem.Quantidade;
-                                var temDesconto = pedidoItem.Subtotal < precoBaseTotal;
-                                var precoComDescontoUnitario = pedidoItem.Quantidade > 0
-                                    ? pedidoItem.Subtotal / pedidoItem.Quantidade
-                                    : pedidoItem.PrecoUnitario;
-
-                                <li>
-                                    <strong>@pedidoItem.Produto.Nome</strong>
-                                    - Qtd: @pedidoItem.Quantidade
-
-                                    @if (temDesconto)
-                                    {
-                                        <span>
-                                            - <strong class="text-success">Sugestão do Chefe (-20%)</strong>
-                                            - Preço base: R$ @pedidoItem.PrecoUnitario.ToString("F2")
-                                            - Com desconto: R$ @precoComDescontoUnitario.ToString("F2")
-                                            - Subtotal: R$ @pedidoItem.Subtotal.ToString("F2")
-                                        </span>
-                                    }
-                                    else
-                                    {
-                                        <span>
-                                            - Unitário: R$ @pedidoItem.PrecoUnitario.ToString("F2")
-                                            - Subtotal: R$ @pedidoItem.Subtotal.ToString("F2")
-                                        </span>
-                                    }
-                                </li>
-                            }
-                        </ul>
-                    }
-                    else
-                    {
-                        <span>Sem itens</span>
-                    }
-                </td>
-                <td>R$ @item.Total.ToString("F2")</td>
-                <td>
-                    <a asp-action="Details" asp-route-id="@item.Id">Detalhes</a> |
-                    <a asp-action="Delete" asp-route-id="@item.Id">Excluir</a>
-                </td>
-            </tr>
+            <a asp-action="Create" class="btn btn-primary">
+                Novo Pedido
+            </a>
         }
-    </tbody>
-</table>
+    </div>
+
+    @if (Model.Any())
+    {
+        <div class="row g-4">
+            @foreach (var item in Model)
+            {
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100 shadow-sm food-card">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h5 class="card-title mb-0">Pedido #@item.Id</h5>
+                                <span class="badge bg-danger">@item.Periodo</span>
+                            </div>
+
+                            <p class="mb-1">
+                                <strong>Data:</strong> @item.DataPedido.ToString("dd/MM/yyyy HH:mm")
+                            </p>
+
+                            <p class="mb-1">
+                                <strong>Cliente:</strong> @item.Cliente.Nome
+                            </p>
+
+                            <p class="mb-3">
+                                <strong>Atendimento:</strong> @item.Atendimento?.Tipo
+                            </p>
+
+                            @if (item.PedidoItens != null && item.PedidoItens.Any())
+                            {
+                                <div class="mb-3">
+                                    <strong>Itens:</strong>
+
+                                    <ul class="mb-0 ps-3">
+                                        @foreach (var pedidoItem in item.PedidoItens)
+                                        {
+                                            var precoBaseTotal = pedidoItem.PrecoUnitario * pedidoItem.Quantidade;
+                                            var temDesconto = pedidoItem.Subtotal < precoBaseTotal;
+
+                                            <li>
+                                                @pedidoItem.Produto.Nome
+                                                <span class="text-muted">x @pedidoItem.Quantidade</span>
+
+                                                @if (temDesconto)
+                                                {
+                                                    <span class="text-success d-block small">
+                                                        Sugestão do Chefe (-20%)
+                                                    </span>
+                                                }
+                                            </li>
+                                        }
+                                    </ul>
+                                </div>
+                            }
+                            else
+                            {
+                                <p class="text-muted">Sem itens cadastrados.</p>
+                            }
+
+                            <p class="fs-5 fw-bold mb-3">
+                                Total: R$ @item.Total.ToString("F2")
+                            </p>
+
+                            <div class="d-flex gap-2">
+                                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-outline-danger btn-sm">
+                                    Detalhes
+                                </a>
+
+                                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-outline-secondary btn-sm">
+                                    Excluir
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="card shadow-sm">
+            <div class="card-body text-center py-5">
+                <h4>Nenhum pedido encontrado</h4>
+                <p class="text-muted">Quando um pedido for realizado, ele aparecerá aqui.</p>
+
+                @if (!admin)
+                {
+                    <a asp-action="Create" class="btn btn-primary">
+                        Fazer meu primeiro pedido
+                    </a>
+                }
+            </div>
+        </div>
+    }
+</div>
