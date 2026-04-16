@@ -4,98 +4,101 @@
     ViewData["Title"] = "Home";
 }
 
-<div class="text-center mb-4">
-    <h1 class="display-5">RestauranteApp</h1>
-    <p>Cardápio e Sugestão do Chefe do dia</p>
-</div>
+<section class="hero text-center text-white d-flex align-items-center mb-5">
+    <div class="container">
+        <h1 class="display-4 fw-bold">Tradição e Sabor Dignos de um Hokage</h1>
+        <p class="lead">Peça agora ou reserve sua mesa</p>
 
-<div class="row mb-4">
-    <div class="col-md-6">
-        <div class="border rounded p-3 h-100">
-            <h3>Sugestão do Chefe - Almoço</h3>
+        <div class="mt-3">
+            <a asp-controller="Pedidos" asp-action="Create" class="btn btn-lg btn-light me-2">Fazer Pedido</a>
+            <a href="#cardapio" class="btn btn-lg btn-outline-light">Ver Cardápio</a>
+        </div>
+    </div>
+</section>
 
-            @if (Model.SugestaoAlmoco?.Produto != null)
-            {
-                var ingredientesAlmoco = Model.SugestaoAlmoco.Produto.Ingredientes != null && Model.SugestaoAlmoco.Produto.Ingredientes.Any()
-                    ? string.Join(", ", Model.SugestaoAlmoco.Produto.Ingredientes.Select(i => i.Nome))
-                    : "Não informado";
+<div class="container">
 
-                var precoFinalAlmoco = Model.SugestaoAlmoco.Produto.Preco * (1 - (Model.SugestaoAlmoco.PercentualDesconto / 100));
+    <div class="row g-4 mb-5">
+        <div class="col-md-6">
+            <div class="chef-box p-4 h-100">
+                <span class="chef-badge">Sugestão do Chefe</span>
+                <h2 class="chef-title">Almoço</h2>
 
-                <p><strong>Prato:</strong> @Model.SugestaoAlmoco.Produto.Nome</p>
-                <p><strong>Descrição:</strong> @Model.SugestaoAlmoco.Produto.Descricao</p>
-                <p><strong>Ingredientes:</strong> @ingredientesAlmoco</p>
-                <p><strong>Preço base:</strong> R$ @Model.SugestaoAlmoco.Produto.Preco.ToString("F2")</p>
-                <p><strong>Desconto:</strong> @Model.SugestaoAlmoco.PercentualDesconto.ToString("F0")%</p>
-                <p><strong>Preço com desconto:</strong> R$ @precoFinalAlmoco.ToString("F2")</p>
-            }
-            else
-            {
-                <p>Nenhuma sugestão cadastrada para o almoço hoje.</p>
-            }
+                @if (Model.SugestaoAlmoco?.Produto != null)
+                {
+                    var ingredientesAlmoco = Model.SugestaoAlmoco.Produto.Ingredientes != null && Model.SugestaoAlmoco.Produto.Ingredientes.Any()
+                        ? string.Join(", ", Model.SugestaoAlmoco.Produto.Ingredientes.Select(i => i.Nome))
+                        : "Não informado";
+
+                    var precoFinalAlmoco = Model.SugestaoAlmoco.Produto.Preco * (1 - (Model.SugestaoAlmoco.PercentualDesconto / 100));
+
+                    <h4 class="mt-3">@Model.SugestaoAlmoco.Produto.Nome</h4>
+                    <p>@Model.SugestaoAlmoco.Produto.Descricao</p>
+                    <p><strong>Ingredientes:</strong> @ingredientesAlmoco</p>
+                    <p><strong>Preço base:</strong> R$ @Model.SugestaoAlmoco.Produto.Preco.ToString("F2")</p>
+                    <p><strong>Desconto:</strong> @Model.SugestaoAlmoco.PercentualDesconto.ToString("F0")%</p>
+                    <p class="chef-price"><strong>Preço com desconto:</strong> R$ @precoFinalAlmoco.ToString("F2")</p>
+                }
+                else
+                {
+                    <p class="mt-3 mb-0">Nenhuma sugestão cadastrada para o almoço hoje.</p>
+                }
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="chef-box p-4 h-100">
+                <span class="chef-badge">Sugestão do Chefe</span>
+                <h2 class="chef-title">Jantar</h2>
+
+                @if (Model.SugestaoJantar?.Produto != null)
+                {
+                    var ingredientesJantar = Model.SugestaoJantar.Produto.Ingredientes != null && Model.SugestaoJantar.Produto.Ingredientes.Any()
+                        ? string.Join(", ", Model.SugestaoJantar.Produto.Ingredientes.Select(i => i.Nome))
+                        : "Não informado";
+
+                    var precoFinalJantar = Model.SugestaoJantar.Produto.Preco * (1 - (Model.SugestaoJantar.PercentualDesconto / 100));
+
+                    <h4 class="mt-3">@Model.SugestaoJantar.Produto.Nome</h4>
+                    <p>@Model.SugestaoJantar.Produto.Descricao</p>
+                    <p><strong>Ingredientes:</strong> @ingredientesJantar</p>
+                    <p><strong>Preço base:</strong> R$ @Model.SugestaoJantar.Produto.Preco.ToString("F2")</p>
+                    <p><strong>Desconto:</strong> @Model.SugestaoJantar.PercentualDesconto.ToString("F0")%</p>
+                    <p class="chef-price"><strong>Preço com desconto:</strong> R$ @precoFinalJantar.ToString("F2")</p>
+                }
+                else
+                {
+                    <p class="mt-3 mb-0">Nenhuma sugestão cadastrada para o jantar hoje.</p>
+                }
+            </div>
         </div>
     </div>
 
-    <div class="col-md-6">
-        <div class="border rounded p-3 h-100">
-            <h3>Sugestão do Chefe - Jantar</h3>
-
-            @if (Model.SugestaoJantar?.Produto != null)
-            {
-                var ingredientesJantar = Model.SugestaoJantar.Produto.Ingredientes != null && Model.SugestaoJantar.Produto.Ingredientes.Any()
-                    ? string.Join(", ", Model.SugestaoJantar.Produto.Ingredientes.Select(i => i.Nome))
-                    : "Não informado";
-
-                var precoFinalJantar = Model.SugestaoJantar.Produto.Preco * (1 - (Model.SugestaoJantar.PercentualDesconto / 100));
-
-                <p><strong>Prato:</strong> @Model.SugestaoJantar.Produto.Nome</p>
-                <p><strong>Descrição:</strong> @Model.SugestaoJantar.Produto.Descricao</p>
-                <p><strong>Ingredientes:</strong> @ingredientesJantar</p>
-                <p><strong>Preço base:</strong> R$ @Model.SugestaoJantar.Produto.Preco.ToString("F2")</p>
-                <p><strong>Desconto:</strong> @Model.SugestaoJantar.PercentualDesconto.ToString("F0")%</p>
-                <p><strong>Preço com desconto:</strong> R$ @precoFinalJantar.ToString("F2")</p>
-            }
-            else
-            {
-                <p>Nenhuma sugestão cadastrada para o jantar hoje.</p>
-            }
-        </div>
+    <div id="cardapio" class="section-header">
+        <h2 class="section-title">Almoço</h2>
+        <a asp-controller="Pedidos" asp-action="Create" class="btn btn-outline-danger">Pedir almoço</a>
     </div>
-</div>
 
-<hr />
-
-<div class="row">
-    <div class="col-md-6">
-        <h3>Cardápio de Almoço</h3>
-
+    <div class="row g-4 mt-2">
         @if (Model.ProdutosAlmoco.Any())
         {
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>Prato</th>
-                        <th>Descrição</th>
-                        <th>Ingredientes</th>
-                        <th>Preço</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var produto in Model.ProdutosAlmoco)
-                    {
-                        var ingredientes = produto.Ingredientes != null && produto.Ingredientes.Any()
-                            ? string.Join(", ", produto.Ingredientes.Select(i => i.Nome))
-                            : "Não informado";
+            @foreach (var produto in Model.ProdutosAlmoco)
+            {
+                var ingredientes = produto.Ingredientes != null && produto.Ingredientes.Any()
+                    ? string.Join(", ", produto.Ingredientes.Select(i => i.Nome))
+                    : "Não informado";
 
-                        <tr>
-                            <td>@produto.Nome</td>
-                            <td>@produto.Descricao</td>
-                            <td>@ingredientes</td>
-                            <td>R$ @produto.Preco.ToString("F2")</td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
+                <div class="col-md-4">
+                    <div class="card food-card h-100 shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title">@produto.Nome</h5>
+                            <p class="card-text">@produto.Descricao</p>
+                            <p class="small text-muted"><strong>Ingredientes:</strong> @ingredientes</p>
+                            <p class="fw-bold mb-0">R$ @produto.Preco.ToString("F2")</p>
+                        </div>
+                    </div>
+                </div>
+            }
         }
         else
         {
@@ -103,53 +106,36 @@
         }
     </div>
 
-    <div class="col-md-6">
-        <h3>Cardápio de Jantar</h3>
+    <div class="section-header mt-5">
+        <h2 class="section-title">Jantar</h2>
+        <a asp-controller="Pedidos" asp-action="Create" class="btn btn-outline-danger">Pedir jantar</a>
+    </div>
 
+    <div class="row g-4 mt-2">
         @if (Model.ProdutosJantar.Any())
         {
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>Prato</th>
-                        <th>Descrição</th>
-                        <th>Ingredientes</th>
-                        <th>Preço</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var produto in Model.ProdutosJantar)
-                    {
-                        var ingredientes = produto.Ingredientes != null && produto.Ingredientes.Any()
-                            ? string.Join(", ", produto.Ingredientes.Select(i => i.Nome))
-                            : "Não informado";
+            @foreach (var produto in Model.ProdutosJantar)
+            {
+                var ingredientes = produto.Ingredientes != null && produto.Ingredientes.Any()
+                    ? string.Join(", ", produto.Ingredientes.Select(i => i.Nome))
+                    : "Não informado";
 
-                        <tr>
-                            <td>@produto.Nome</td>
-                            <td>@produto.Descricao</td>
-                            <td>@ingredientes</td>
-                            <td>R$ @produto.Preco.ToString("F2")</td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
+                <div class="col-md-4">
+                    <div class="card food-card h-100 shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title">@produto.Nome</h5>
+                            <p class="card-text">@produto.Descricao</p>
+                            <p class="small text-muted"><strong>Ingredientes:</strong> @ingredientes</p>
+                            <p class="fw-bold mb-0">R$ @produto.Preco.ToString("F2")</p>
+                        </div>
+                    </div>
+                </div>
+            }
         }
         else
         {
             <p>Nenhum item cadastrado para o jantar.</p>
         }
     </div>
-</div>
 
-<hr />
-
-<div class="mt-4">
-    <a class="btn btn-primary me-2" asp-controller="Pedidos" asp-action="Create">Fazer Pedido</a>
-    <a class="btn btn-secondary me-2" asp-controller="Reservas" asp-action="Create">Reservar Mesa</a>
-
-    @if (Context.Session.GetInt32("ClienteId") == null)
-    {
-        <a class="btn btn-outline-primary me-2" asp-controller="Auth" asp-action="Login">Login</a>
-        <a class="btn btn-outline-secondary" asp-controller="Auth" asp-action="Register">Cadastro</a>
-    }
 </div>
