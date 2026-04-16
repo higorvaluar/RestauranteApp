@@ -1,0 +1,202 @@
+:root {
+  --vermelho: #c1121f;
+  --vermelho-escuro: #9b0e18;
+  --branco: #ffffff;
+  --cinza: #f8f9fa;
+}
+
+body {
+  background-color: var(--cinza);
+  font-family: 'Segoe UI', sans-serif;
+}
+
+/* NAVBAR */
+.navbar {
+  background-color: var(--vermelho);
+}
+
+/* HERO */
+.hero {
+  height: 60vh;
+  background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)),
+              url('https://images.unsplash.com/photo-1555992336-03a23c7b20ee');
+  background-size: cover;
+  background-position: center;
+}
+
+/* SEÇÕES */
+.section-title {
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+/* CARD */
+.card {
+  border: none;
+  border-radius: 15px;
+  transition: 0.3s;
+}
+
+.card:hover {
+  transform: scale(1.03);
+}
+
+.card h5 {
+  font-weight: bold;
+}
+
+/* SUGESTÃO DO CHEFE */
+.chef-box {
+  background-color: var(--vermelho);
+  color: white;
+  border-radius: 15px;
+}
+
+/* BOTÕES */
+.btn-primary {
+  background-color: var(--vermelho);
+  border: none;
+}
+
+.btn-primary:hover {
+  background-color: var(--vermelho-escuro);
+}
+
+/* LOGIN PAGE */
+
+.login-body {
+  height: 100vh;
+  background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)),
+              url('https://images.unsplash.com/photo-1555992336-03a23c7b20ee');
+  background-size: cover;
+  background-position: center;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.login-container {
+  width: 100%;
+  max-width: 400px;
+}
+
+.login-card {
+  background-color: white;
+  padding: 30px;
+  border-radius: 15px;
+}
+
+/* INPUTS */
+.form-control:focus {
+  border-color: var(--vermelho);
+  box-shadow: 0 0 0 0.2rem rgba(193, 18, 31, 0.25);
+}
+
+/* LINK */
+a {
+  color: var(--vermelho);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* CARD DE COMIDA */
+.food-card img {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+.food-card {
+  transition: 0.3s;
+}
+
+.food-card:hover {
+  transform: scale(1.05);
+}
+/* SUGESTÃO DO CHEF BONITA */
+
+.chef-container {
+  margin-top: 20px;
+}
+
+.chef-card {
+  display: flex;
+  align-items: center;
+  background: linear-gradient(135deg, #c1121f, #780000);
+  color: white;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+.chef-img {
+  width: 40%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.chef-content {
+  padding: 20px;
+  flex: 1;
+}
+
+.chef-badge {
+  background-color: #fff;
+  color: #c1121f;
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: bold;
+  display: inline-block;
+  margin-bottom: 10px;
+}
+
+.chef-title {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.chef-price {
+  font-size: 20px;
+  margin-top: 10px;
+}
+
+.chef-btn {
+  margin-top: 15px;
+}
+
+.food-card img {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+/* TÍTULOS BONITOS (ALMOÇO E JANTAR) */
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  background-color: #fff;
+  border: 2px solid #c1121f;
+  border-radius: 15px;
+
+  padding: 15px 20px;
+  margin-top: 20px;
+
+  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+}
+
+.section-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 26px;
+  margin: 0;
+  color: #c1121f;
+}
