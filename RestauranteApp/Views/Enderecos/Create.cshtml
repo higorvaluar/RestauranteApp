@@ -43,13 +43,13 @@
 
                         <div class="mb-3">
                             <label asp-for="Estado" class="form-label">Estado</label>
-                            <input asp-for="Estado" class="form-control" placeholder="Ex: TO" />
+                            <input asp-for="Estado" class="form-control" placeholder="Ex: TO ou Tocantins" />
                             <span asp-validation-for="Estado" class="text-danger"></span>
                         </div>
 
                         <div class="mb-4">
                             <label asp-for="CEP" class="form-label">CEP</label>
-                            <input asp-for="CEP" class="form-control" placeholder="Ex: 77000-000" />
+                            <input asp-for="CEP" class="form-control" placeholder="Ex: 77000000" maxlength="8" />
                             <span asp-validation-for="CEP" class="text-danger"></span>
                         </div>
 

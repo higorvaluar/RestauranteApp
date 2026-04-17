@@ -247,6 +247,12 @@ namespace RestauranteApp.Controllers
 
         private async Task ValidarSugestaoChefe(SugestaoChefe sugestaoChefe, int? idIgnorar = null)
         {
+
+            if (sugestaoChefe.Data.Date < DateTime.Today)
+            {
+                ModelState.AddModelError(nameof(SugestaoChefe.Data), "A Sugestão do Chefe não pode ser cadastrada para uma data passada.");
+            }
+
             var produto = await _context.Produtos.FindAsync(sugestaoChefe.ProdutoId);
 
             if (produto == null)
